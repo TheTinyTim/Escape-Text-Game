@@ -51,9 +51,6 @@ public class GameMain extends JFrame {
     public static void main(String[] args) {
         //Create a new GameMain class to create the ASCII Terminal
         GameMain app = new GameMain ();
-    
-        Font gameFont = app.getFont ();
-        app.setFont (new Font (gameFont.getFontName (), Font.PLAIN, 40));
         
         //Set how the application closes
         app.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
