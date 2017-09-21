@@ -1,5 +1,6 @@
 package com.CabinEscape;
 
+import com.asciiPanel.AsciiFont;
 import com.asciiPanel.AsciiPanel;
 
 import javax.swing.JFrame;
@@ -48,13 +49,18 @@ public class GameMain extends JFrame implements KeyListener {
         gameSettings = new GameSettings ();
         
         //Create a new ASCII Terminal with the default 80x24 width/height
-        gameTerminal = new AsciiPanel (gameSettings.gameWindowWidth, gameSettings.gameWindowHeight);
+        gameTerminal = new AsciiPanel (gameSettings.gameWindowWidth,
+                                       gameSettings.gameWindowHeight,
+                                       AsciiFont.CP437_12x12);
         
         //Write to the terminal with an x/y coordinate
-        gameTerminal.write ("Hello World!", 1, 1);
+        gameTerminal.write ("Hello world!", 1, 1);
         
         //Set the windows title name
         this.setTitle (gameSettings.gameWindowsTitle);
+    
+        //Add the key listener
+        addKeyListener (this);
         
         //Add the game terminal to JFrame to later use
         add (gameTerminal);
@@ -67,12 +73,8 @@ public class GameMain extends JFrame implements KeyListener {
     public void startGame (GameMain gameRenderer)
     {
         this.gameRenderer = gameRenderer;
-    
-        //Add the key listener
-        addKeyListener (this);
         
-        mainMenu = new MainMenu (gameSettings, this);
-        
+        mainMenu = new MainMenu (gameSettings, gameTerminal);
     
         //Set how the application closes
         gameRenderer.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
@@ -82,13 +84,22 @@ public class GameMain extends JFrame implements KeyListener {
     
     public void changeMenu ()
     {
-    
+        gameTerminal.clear ();
+        
+        mainMenu.drawMenu ();
+        
+        gameTerminal.repaint ();
     }
     
     //Set up all the methods needed to extend KeyListener
     public void keyPressed (KeyEvent event)
     {
         //System.out.println ("Key pressed");
+        
+        //System.out.println (event.toString ());
+    
+        if (event.getKeyChar () == 'c' || event.getKeyChar () == 'C')
+            changeMenu ();
     }
     
     public void keyReleased (KeyEvent event)
@@ -98,11 +109,7 @@ public class GameMain extends JFrame implements KeyListener {
     
     public void keyTyped (KeyEvent event)
     {
-        //gameTerminal.clear ();
-        //System.out.println (event.toString ());
-        
-        if (event.getKeyChar () == KeyEvent.VK_C)
-            changeMenu ();
+    
         
 //        if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE)
 //            onScreenTyping = onScreenTyping.substring (0, onScreenTyping.length () - 1);

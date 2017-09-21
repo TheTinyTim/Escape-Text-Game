@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="AsciiPanel">
+  <library name="asciiPanel">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/AsciiPanel.jar!/" />
+      <root url="jar://$PROJECT_DIR$/asciiPanel.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
