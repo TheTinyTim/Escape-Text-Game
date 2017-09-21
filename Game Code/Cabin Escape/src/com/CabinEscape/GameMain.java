@@ -1,10 +1,12 @@
 package com.CabinEscape;
 
-import javax.swing.JFrame;
-import asciiPanel.AsciiPanel;
-import java.awt.*;
+import com.asciiPanel.AsciiPanel;
 
-public class GameMain extends JFrame {
+import javax.swing.JFrame;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+public class GameMain extends JFrame implements KeyListener {
     
     /*
      * This will be a old school style text based adventure/escape room game. It will be built off using Trystan's ASCIIPanel java
@@ -20,41 +22,94 @@ public class GameMain extends JFrame {
     //https://stackoverflow.com/questions/285793/what-is-a-serialversionuid-and-why-should-i-use-it
     private static final long serialVersionUID = 1060623638149583738L;
     
+    public static GameMain gameRenderer;
+    
     //Initialize the variable that will store the ASCII Terminal for later use and creation
     private AsciiPanel gameTerminal;
+    
+    //Initialize the GameSettings class variable
+    private GameSettings gameSettings;
+    
+    private MainMenu mainMenu;
+    
+    private String onScreenTyping = "";
+    
+    public static void main(String[] args) {
+        //Create a new GameMain class to start the game
+        gameRenderer = new GameMain ();
+    }
 
     public GameMain ()
     {
         //Invoke the overridden superclass method for JFrame
         super ();
         
-        //Create a new ASCII Terminal with the default 80x24 width/height
-        gameTerminal = new AsciiPanel ();
+        //Create the class that holds all the settings for the game
+        gameSettings = new GameSettings ();
         
-        //gameFont = gameFont.deriveFont (30);
-        //this.setFont (gameFont);
+        //Create a new ASCII Terminal with the default 80x24 width/height
+        gameTerminal = new AsciiPanel (gameSettings.gameWindowWidth, gameSettings.gameWindowHeight);
         
         //Write to the terminal with an x/y coordinate
         gameTerminal.write ("Hello World!", 1, 1);
         
-        
         //Set the windows title name
-        this.setTitle ("Project Cabin Escape");
+        this.setTitle (gameSettings.gameWindowsTitle);
         
         //Add the game terminal to JFrame to later use
         add (gameTerminal);
         //Now pack the JFrame to set the needed space for the windows created
         pack ();
         
+        startGame (this);
     }
     
-    public static void main(String[] args) {
-        //Create a new GameMain class to create the ASCII Terminal
-        GameMain app = new GameMain ();
+    public void startGame (GameMain gameRenderer)
+    {
+        this.gameRenderer = gameRenderer;
+    
+        //Add the key listener
+        addKeyListener (this);
         
+        mainMenu = new MainMenu (gameSettings, this);
+        
+    
         //Set how the application closes
-        app.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+        gameRenderer.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
         //Now set the JFrame window visible
-        app.setVisible (true);
+        gameRenderer.setVisible (true);
+    }
+    
+    public void changeMenu ()
+    {
+    
+    }
+    
+    //Set up all the methods needed to extend KeyListener
+    public void keyPressed (KeyEvent event)
+    {
+        //System.out.println ("Key pressed");
+    }
+    
+    public void keyReleased (KeyEvent event)
+    {
+        //System.out.println ("Key released");
+    }
+    
+    public void keyTyped (KeyEvent event)
+    {
+        //gameTerminal.clear ();
+        //System.out.println (event.toString ());
+        
+        if (event.getKeyChar () == KeyEvent.VK_C)
+            changeMenu ();
+        
+//        if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE)
+//            onScreenTyping = onScreenTyping.substring (0, onScreenTyping.length () - 1);
+//        else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER)
+//            onScreenTyping += event.getKeyChar ();
+        
+        //gameTerminal.write (onScreenTyping, 1, 1);
+        //gameTerminal.updateUI ();
     }
 }
