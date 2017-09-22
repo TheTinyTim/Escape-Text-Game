@@ -51,7 +51,7 @@ public class GameMain extends JFrame implements KeyListener {
         //Create a new ASCII Terminal with the default 80x24 width/height
         gameTerminal = new AsciiPanel (gameSettings.gameWindowWidth,
                                        gameSettings.gameWindowHeight,
-                                       AsciiFont.CP437_12x12);
+                                       AsciiFont.CP437_9x16);
         
         //Write to the terminal with an x/y coordinate
         gameTerminal.write ("Hello world!", 1, 1);
