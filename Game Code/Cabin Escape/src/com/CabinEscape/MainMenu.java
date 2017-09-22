@@ -10,6 +10,7 @@ import sun.misc.IOUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class MainMenu {
     
@@ -17,10 +18,17 @@ public class MainMenu {
     
     private AsciiPanel gameTerminal;
     
+    private ArrayList<String> buttons = new ArrayList<String> ();
+    private int selectedButton = 0;
+    
     public MainMenu (GameSettings gameSettings, AsciiPanel gameTerminal)
     {
         this.gameSettings = gameSettings;
         this.gameTerminal = gameTerminal;
+        
+        buttons.add ("Play Game");
+        buttons.add ("Settings");
+        buttons.add ("Quit");
     }
     
     //Draw the menu
@@ -42,11 +50,26 @@ public class MainMenu {
 //
 //        File f = new File (classLoader.getResource ("main_menu_title.txt").getFile ());
 //        System.out.println (f.getAbsolutePath ());
-        
+    
+        System.out.println (gameSettings.gameWindowWidth - GameRendering.titleLength ("Penis"));
         //Now call the function to draw the title
-        GameRendering.drawMenuTitle (new Vector2D (5, 5),
+        GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Cabin"), 5),
                                      gameTerminal,
-                                     file,
+                                     "Cabin",
+                                     AsciiPanel.white);
+        
+        GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Escape"), 13),
+                                     gameTerminal,
+                                     "Escape",
                                      AsciiPanel.red);
+        
+        GameRendering.drawButtons (new Vector2D ((gameSettings.gameWindowWidth / 2) - 6, (gameSettings.gameWindowHeight / 2)),
+                                                 buttons,
+                                                 selectedButton,
+                                                 gameTerminal,
+                                                 AsciiPanel.yellow,
+                                                 AsciiPanel.white);
     }
+    
+    //Create the function that will hand
 }

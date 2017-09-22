@@ -30,4 +30,16 @@ public class Vector2D {
         else
             return false;
     }
+    
+    public void add (int a)
+    {
+        this.x += a;
+        this.y += a;
+    }
+    
+    public void sub (int a)
+    {
+        this.x -= a;
+        this.y -= a;
+    }
 }

@@ -8,8 +8,7 @@ import structs.Vector2D;
 
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameRendering {
     
@@ -21,6 +20,12 @@ public class GameRendering {
     private static final int PIPE_VERTICAL = 179;
     private static final int PIPE_HORIZONTAL = 196;
     
+    //Set up the dictionary that will hold all the letters/numbers/characters to display on the terminal for titles
+    public static Map<String, ArrayList<String>> terminalTitleLetters = new HashMap<String, ArrayList<String>> ();
+    private static final int LETTER_SPACE = 2;
+    
+    //Set up variables for the function to display a button list
+    private static final int BUTTON_SPACE = 2;
     
     //This class will hold all te functions needed to help with rendering onto the ASCII Terminal
     
@@ -129,51 +134,137 @@ public class GameRendering {
         }
     }
     
-    //Create the function that will handle drawing menu titles from text files
-    public static void drawMenuTitle (Vector2D startPos, AsciiPanel gameTerminal, InputStream file, Color foreground)
+    //This function will go through the title_letters.txt file and grab all the letters in arrays for later use
+    public static void setupTitleCharacters (InputStream file)
     {
-        //Make a list that will store all the data from the text file
-        ArrayList<String> fileText = new ArrayList<String> ();
+        //Create a list that will temporarily hold the letter until the full letter is stored (break is when the # shows up)
+        ArrayList<String> tempLetter = new ArrayList<String> ();
         
-        //Create a scanner to read the input stream of the file
+        //Create a scanner to read the file
         Scanner scanner = new Scanner (file);
-        //Loop through until the scanner doesn't have any more lines to read
+        //Now loop through the file to get all the letters. When a # is found this marks the end of the letter and the next character after that is the key
         while (scanner.hasNextLine ()) {
-            //Add the next line of the file to the list
-            fileText.add (scanner.nextLine ());
+            String currLine = scanner.nextLine ();
+            //Check to make sure this line doesn't have a # in it as this is the end of the letter
+            if (currLine.contains ("#")) {
+                //System.out.println (tempLetter.size ());
+                //Now that the end of the letter has been found and the full letter is stored in the temp array store it in the dictionary with the key (second character on this line)
+                terminalTitleLetters.put (currLine.substring (1, currLine.length ()), (ArrayList<String>) tempLetter.clone ());
+                //Make sure to empty out the temp letter array list to use again
+                tempLetter.clear ();
+            } else {
+                //Add the line to the temp array list
+                tempLetter.add (currLine);
+            }
         }
-
-        //Make sure to close the scanner to not take up any memory
-        scanner.close ();
-        try {
-            //Do the same thing for the input stream
-            file.close ();
-        } catch (IOException e) {
-            e.printStackTrace ();
+    }
+    
+    //Create the function that will handle drawing menu titles from text given and then draw the separate letters based on the string given
+    public static void drawMenuTitle (Vector2D startPos, AsciiPanel gameTerminal, String title, Color foreground)
+    {
+        //First make sure to make the title all the uppercase
+        title = title.toUpperCase ();
+        
+        //Setup the variables needed for the loop
+        
+        //Now loop through all the letters in the title
+        for (int titleIndex = 0; titleIndex < title.length (); titleIndex++) {
+            //Get the letter at the current index
+            String currLetter = title.substring (titleIndex, titleIndex + 1);
+            //This will store the largest line in the letter array for use later
+            int largestLine = 0;
+            
+            if (!currLetter.equals (" ")) {
+                //Get the array from the dictionary that holds the correct letter
+                ArrayList<String> letterList = terminalTitleLetters.get (currLetter);
+                
+                //Now go through the letter list and display it on the terminal
+                for (int y = 0; y < letterList.size (); y++) {
+                    //Get the position of the letter based on the starting pos
+                    int yPos = startPos.y + y;
+                    
+                    //Check to see if this line is the largest one. And if so set it as the largest one
+                    if (letterList.get (y).length () > largestLine)
+                        largestLine = letterList.get (y).length ();
+                    
+                    //Now go through all the characters in the string
+                    for (int x = 0; x < letterList.get (y).length (); x++) {
+                        //Get the position of the letter based on the starting pos
+                        int xPos = startPos.x + x;
+                        
+                        //Get the character at the current index
+                        char currChar = letterList.get (y).charAt (x);
+                        char charToWrite;
+                        //Figure out what the character is supposed to represent
+                        if (currChar == '*')
+                            charToWrite = 219;
+                        else
+                            charToWrite = 32;
+                        
+                        //Now place the character on the terminal in it's position
+                        gameTerminal.write (charToWrite, xPos, yPos, foreground);
+                    }
+                }
+            } else {
+                largestLine = 2;
+            }
+            
+            //Now update the start pos for the next letter based on the largest line and another added 2 for the letter space
+            startPos.x += largestLine + LETTER_SPACE;
         }
         
-        //Go through all the lines from the file and print out their corresponding character
-        for (int y = 0; y < fileText.size (); y++) {
-            //Get the current index's y position on the terminal based on the starting position given.
-            int yPos = startPos.y + y;
+    }
+    
+    //Create a function that will give the total length of a string for a title plus spaces
+    public static int titleLength (String title)
+    {
+        //Set up some variables that will be later used
+        int length = 0;
+        
+        //Upper case the title
+        title = title.toUpperCase ();
+        
+        //Set up some variables to denote how much the length that character will be
+        String twoLength = "!., ";
+        String fourLength = "()";
+        String sixLength = "1I";
+        String eightLength = "234567890ABCDEFGHJKLOPRSUVXZ?";
+        String tenLength = "MNQTWY";
+        
+        for (int i = 0; i < title.length (); i++) {
+            //Get the character at the current index
+            String currChar = title.substring (i, i + 1);
             
-            //Loop through the characters in the current row
-            for (int x = 0; x < fileText.get (y).length (); x++) {
-                //Get the current index's x position on the terminal based on the starting position given.
-                int xPos = startPos.x + x;
-                
-                //Get the character at the current index
-                char currChar = fileText.get (y).charAt (x);
-                char charToWrite;
-                //Figure out what the character is supposed to represent
-                if (currChar == 'v')
-                    charToWrite = 219;
-                else
-                    charToWrite = 32;
-                
-                //Now place the character on the terminal in it's position
-                gameTerminal.write (charToWrite, xPos, yPos, foreground);
+            //Find out the length of the character
+            if (twoLength.contains (currChar))
+                length += 2 + LETTER_SPACE;
+            else if (fourLength.contains (currChar))
+                length += 4 + LETTER_SPACE;
+            else if (sixLength.contains (currChar))
+                length += 6 + LETTER_SPACE;
+            else if (eightLength.contains (currChar))
+                length += 8 + LETTER_SPACE;
+            else if (tenLength.contains (currChar))
+                length += 10 + LETTER_SPACE;
+        }
+        
+        return length;
+    }
+    
+    //Create a function that will draw a list of selectable buttons
+    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, int selected, AsciiPanel gameTerminal, Color bracketColor, Color foreground)
+    {
+        //Go through all the buttons and display them on screen
+        for (int i = 0; i < buttonNames.size (); i++){
+            //Determine if this button is currently the selected button
+            if (selected == i) {
+                gameTerminal.write ("[", startPos.x - 2, startPos.y, bracketColor);
+                gameTerminal.write ("]", startPos.x + buttonNames.get (i).length () + 1, startPos.y, bracketColor);
             }
+            
+            gameTerminal.write (buttonNames.get (i), startPos.x, startPos.y, foreground);
+            
+            startPos.y += BUTTON_SPACE;
         }
     }
 }

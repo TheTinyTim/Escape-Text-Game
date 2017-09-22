@@ -6,6 +6,11 @@ import com.asciiPanel.AsciiPanel;
 import javax.swing.JFrame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class GameMain extends JFrame implements KeyListener {
     
@@ -53,9 +58,6 @@ public class GameMain extends JFrame implements KeyListener {
                                        gameSettings.gameWindowHeight,
                                        AsciiFont.CP437_9x16);
         
-        //Write to the terminal with an x/y coordinate
-        gameTerminal.write ("Hello world!", 1, 1);
-        
         //Set the windows title name
         this.setTitle (gameSettings.gameWindowsTitle);
     
@@ -73,8 +75,15 @@ public class GameMain extends JFrame implements KeyListener {
     public void startGame (GameMain gameRenderer)
     {
         this.gameRenderer = gameRenderer;
+    
+        //Set up the title letters in the game rendering class for later use.
+        ClassLoader classLoader = getClass ().getClassLoader ();
+        InputStream file = classLoader.getResourceAsStream ("title_letters.txt");
+        GameRendering.setupTitleCharacters (file);
         
+        //Create the class that holds all the data for the main menu
         mainMenu = new MainMenu (gameSettings, gameTerminal);
+        mainMenu.drawMenu ();
     
         //Set how the application closes
         gameRenderer.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
@@ -84,20 +93,19 @@ public class GameMain extends JFrame implements KeyListener {
     
     public void changeMenu ()
     {
-        gameTerminal.clear ();
+        //Make sure to clear the terminal so nothing will be left over
+        //gameTerminal.clear ();
         
-        mainMenu.drawMenu ();
+        //Draw the menu
+        //mainMenu.drawMenu ();
         
-        gameTerminal.repaint ();
+        //Now repaint the terminal so the changes will actually display
+        //gameTerminal.repaint ();
     }
     
     //Set up all the methods needed to extend KeyListener
     public void keyPressed (KeyEvent event)
     {
-        //System.out.println ("Key pressed");
-        
-        //System.out.println (event.toString ());
-    
         if (event.getKeyChar () == 'c' || event.getKeyChar () == 'C')
             changeMenu ();
     }
@@ -109,8 +117,6 @@ public class GameMain extends JFrame implements KeyListener {
     
     public void keyTyped (KeyEvent event)
     {
-    
-        
 //        if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE)
 //            onScreenTyping = onScreenTyping.substring (0, onScreenTyping.length () - 1);
 //        else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER)
