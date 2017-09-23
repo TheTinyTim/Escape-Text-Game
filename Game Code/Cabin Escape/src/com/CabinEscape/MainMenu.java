@@ -20,13 +20,20 @@ public class MainMenu {
     
     private ArrayList<String> buttons = new ArrayList<String> ();
     private int selectedButton = 0;
+    private final int BUTTON_SPACE = 2;
+    
+    public boolean hasSaveGame = false;
     
     public MainMenu (GameSettings gameSettings, AsciiPanel gameTerminal)
     {
         this.gameSettings = gameSettings;
         this.gameTerminal = gameTerminal;
         
-        buttons.add ("Play Game");
+        //TODO Check to see if the user has a save game and if so add the continue button
+        if (hasSaveGame)
+            buttons.add ("Continue Game");
+        
+        buttons.add ("New Game");
         buttons.add ("Settings");
         buttons.add ("Quit");
     }
@@ -41,35 +48,71 @@ public class MainMenu {
 //                                  "Main Menu");
         
         //Draw the title of the game on the screen
-        //First get the classloader to get the text file from the resource folder
-        ClassLoader classLoader = getClass ().getClassLoader ();
-        
-//        File file = new File (classLoader.getResource ("main_menu_title.txt").getFile ());
-        
-        InputStream file = classLoader.getResourceAsStream ("main_menu_title.txt");
-//
-//        File f = new File (classLoader.getResource ("main_menu_title.txt").getFile ());
-//        System.out.println (f.getAbsolutePath ());
     
-        System.out.println (gameSettings.gameWindowWidth - GameRendering.titleLength ("Penis"));
         //Now call the function to draw the title
         GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Cabin"), 5),
-                                     gameTerminal,
-                                     "Cabin",
-                                     AsciiPanel.white);
+                                                   "Cabin",
+                                                   gameTerminal,
+                                                   AsciiPanel.white);
         
         GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Escape"), 13),
-                                     gameTerminal,
-                                     "Escape",
-                                     AsciiPanel.red);
+                                                   "Escape",
+                                                   gameTerminal,
+                                                   AsciiPanel.red);
         
-        GameRendering.drawButtons (new Vector2D ((gameSettings.gameWindowWidth / 2) - 6, (gameSettings.gameWindowHeight / 2)),
+        GameRendering.drawButtons (new Vector2D ((gameSettings.gameWindowWidth / 2) - 6, (gameSettings.gameWindowHeight / 2) + 5),
                                                  buttons,
+                                                 BUTTON_SPACE,
                                                  selectedButton,
                                                  gameTerminal,
                                                  AsciiPanel.yellow,
                                                  AsciiPanel.white);
     }
     
-    //Create the function that will hand
+    //Create the function that will handle changing the selected button
+    public void changeSelectedButton (int change)
+    {
+        //Change the selection variable based on the change
+        selectedButton += change;
+        
+        //Now check if the selection has gone over/under the max/min
+        if (selectedButton < 0)
+            selectedButton = buttons.size () - 1;
+        else if (selectedButton > buttons.size () - 1)
+            selectedButton = 0;
+    }
+    
+    //Create the function that will handle the user pressing the enter button on the current selected button
+    public void activateSelectedButton (GameMain gameMain)
+    {
+        //Find out which button is selected (0=Play 1=Settings 2=Quit)
+        if (selectedButton == 0) {
+            //Check to see if the game currently has a save game if so the button will be different if it doesn't
+            if (hasSaveGame) {
+                //TODO Continue game
+            } else {
+                //TODO New Game
+            }
+        } else if (selectedButton == 1) {
+            //Check to see if the game currently has a save game if so the button will be different if it doesn't
+            if (hasSaveGame) {
+                //TODO New Game
+            } else {
+                //Change the menu to the settings menu
+                gameMain.currentMenu = 1;
+            }
+        } else if (selectedButton == 2) {
+            //Check to see if the game currently has a save game if so the button will be different if it doesn't
+            if (hasSaveGame) {
+                //Change the menu to the settings menu
+                gameMain.currentMenu = 1;
+            } else {
+                //Close the window and stop the application
+                gameMain.dispose ();
+            }
+        } else if (selectedButton == 3) {
+            //Close the window and stop the application
+            gameMain.dispose ();
+        }
+    }
 }

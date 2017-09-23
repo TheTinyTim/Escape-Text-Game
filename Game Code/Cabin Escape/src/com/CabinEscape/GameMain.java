@@ -36,7 +36,10 @@ public class GameMain extends JFrame implements KeyListener {
     //Initialize the GameSettings class variable
     private GameSettings gameSettings;
     
+    //All the menus
     private MainMenu mainMenu;
+    private SettingsMenu settingsMenu;
+    public int currentMenu = 0;
     
     private String onScreenTyping = "";
     
@@ -52,6 +55,7 @@ public class GameMain extends JFrame implements KeyListener {
         
         //Create the class that holds all the settings for the game
         gameSettings = new GameSettings ();
+        //TODO grab settings from file and place it in the settings class
         
         //Create a new ASCII Terminal with the default 80x24 width/height
         gameTerminal = new AsciiPanel (gameSettings.gameWindowWidth,
@@ -60,6 +64,9 @@ public class GameMain extends JFrame implements KeyListener {
         
         //Set the windows title name
         this.setTitle (gameSettings.gameWindowsTitle);
+        
+        //Don't allow the user to resize the window
+        setResizable (false);
     
         //Add the key listener
         addKeyListener (this);
@@ -81,33 +88,85 @@ public class GameMain extends JFrame implements KeyListener {
         InputStream file = classLoader.getResourceAsStream ("title_letters.txt");
         GameRendering.setupTitleCharacters (file);
         
-        //Create the class that holds all the data for the main menu
+        //Instantiate all the menus
         mainMenu = new MainMenu (gameSettings, gameTerminal);
-        mainMenu.drawMenu ();
+        settingsMenu = new SettingsMenu (gameSettings, gameTerminal);
+        
+        updateTerminal ();
     
         //Set how the application closes
-        gameRenderer.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+        gameRenderer.setDefaultCloseOperation (JFrame.DISPOSE_ON_CLOSE);
         //Now set the JFrame window visible
         gameRenderer.setVisible (true);
     }
     
-    public void changeMenu ()
+    public void updateTerminal ()
     {
         //Make sure to clear the terminal so nothing will be left over
-        //gameTerminal.clear ();
+        gameTerminal.clear ();
         
         //Draw the menu
-        //mainMenu.drawMenu ();
+        if (currentMenu == 0)
+            mainMenu.drawMenu ();
+        else if (currentMenu == 1)
+            settingsMenu.drawMenu ();
         
         //Now repaint the terminal so the changes will actually display
-        //gameTerminal.repaint ();
+        gameTerminal.repaint ();
     }
     
     //Set up all the methods needed to extend KeyListener
     public void keyPressed (KeyEvent event)
     {
-        if (event.getKeyChar () == 'c' || event.getKeyChar () == 'C')
-            changeMenu ();
+        /*
+         * Keycodes:
+         *      40 = Up Arrow
+         *      38 = Down Arrow
+         *      39 = Right Arrow
+         *      37 = Left Arrow
+         */
+        if (event.getKeyCode () == 40)
+            changeSelectedButton (1);
+        
+        else if (event.getKeyCode () == 38)
+            changeSelectedButton (-1);
+        
+        else if (event.getKeyCode () == 39)
+            incrementSelectedButton (1);
+        
+        else if (event.getKeyCode () == 37)
+            incrementSelectedButton (-1);
+        
+        else if (event.getKeyCode () == KeyEvent.VK_ENTER)
+            activateButton ();
+        
+        //Make sure to update the terminal to display the new information
+        updateTerminal ();
+    }
+    
+    //Function that will call the correct button activation method based on the current menu open
+    public void activateButton ()
+    {
+        if (currentMenu == 0)
+            mainMenu.activateSelectedButton (this);
+        else if (currentMenu == 1)
+            settingsMenu.activateSelectedButton (this);
+    }
+    
+    //Function that will call the correct button change selection method based on the current menu open
+    public void changeSelectedButton (int change)
+    {
+        if (currentMenu == 0)
+            mainMenu.changeSelectedButton (change);
+        else if (currentMenu == 1)
+            settingsMenu.changeSelectedButton (change);
+    }
+    
+    //Function that will call te correct button incrementation method based on the current menu open
+    public void incrementSelectedButton (int change)
+    {
+        if (currentMenu == 1)
+            settingsMenu.changeSoundLevel (change);
     }
     
     public void keyReleased (KeyEvent event)

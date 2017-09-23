@@ -42,4 +42,10 @@ public class Vector2D {
         this.x -= a;
         this.y -= a;
     }
+    
+    public void set (Vector2D v)
+    {
+        this.x = v.x;
+        this.y = v.y;
+    }
 }

@@ -24,9 +24,6 @@ public class GameRendering {
     public static Map<String, ArrayList<String>> terminalTitleLetters = new HashMap<String, ArrayList<String>> ();
     private static final int LETTER_SPACE = 2;
     
-    //Set up variables for the function to display a button list
-    private static final int BUTTON_SPACE = 2;
-    
     //This class will hold all te functions needed to help with rendering onto the ASCII Terminal
     
     //This will draw a border onto the game terminal with no title
@@ -160,10 +157,13 @@ public class GameRendering {
     }
     
     //Create the function that will handle drawing menu titles from text given and then draw the separate letters based on the string given
-    public static void drawMenuTitle (Vector2D startPos, AsciiPanel gameTerminal, String title, Color foreground)
+    public static void drawMenuTitle (Vector2D startPos, String title, AsciiPanel gameTerminal, Color foreground)
     {
         //First make sure to make the title all the uppercase
         title = title.toUpperCase ();
+        
+        //Make a temp of start pos so that if the user passes a already stored one it won't change that in memory
+        Vector2D tempStartPos = new Vector2D (startPos.x, startPos.y);
         
         //Setup the variables needed for the loop
         
@@ -212,7 +212,8 @@ public class GameRendering {
             //Now update the start pos for the next letter based on the largest line and another added 2 for the letter space
             startPos.x += largestLine + LETTER_SPACE;
         }
-        
+        //Set start pos back to what it originally was
+        startPos.set (tempStartPos);
     }
     
     //Create a function that will give the total length of a string for a title plus spaces
@@ -252,7 +253,7 @@ public class GameRendering {
     }
     
     //Create a function that will draw a list of selectable buttons
-    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, int selected, AsciiPanel gameTerminal, Color bracketColor, Color foreground)
+    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, int buttonSpace, int selected, AsciiPanel gameTerminal, Color bracketColor, Color foreground)
     {
         //Go through all the buttons and display them on screen
         for (int i = 0; i < buttonNames.size (); i++){
@@ -264,7 +265,7 @@ public class GameRendering {
             
             gameTerminal.write (buttonNames.get (i), startPos.x, startPos.y, foreground);
             
-            startPos.y += BUTTON_SPACE;
+            startPos.y += buttonSpace;
         }
     }
 }
