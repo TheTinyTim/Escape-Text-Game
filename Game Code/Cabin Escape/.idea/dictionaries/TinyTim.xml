@@ -2,6 +2,7 @@
   <dictionary name="TinyTim">
     <words>
       <w>bools</w>
+      <w>datas</w>
       <w>keycodes</w>
       <w>rects</w>
     </words>

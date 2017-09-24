@@ -83,6 +83,69 @@ public class GameRendering {
         }
     }
     
+    //This function will animate the border when it's first being displayed
+    public static void displayAnimatedBorder (Rect endRect, AsciiPanel gameTerminal)
+    {
+        //Create a new Rect that will store the current width/height/position of the animated border
+        Rect currentRect = new Rect (endRect.x + (endRect.width / 2),
+                                     endRect.y + (endRect.height / 2));
+        //Get the middle of the end border to have the location of where the border should grow from
+//        Vector2D borderMiddle = new Vector2D (endRect.x + (endRect.width / 2),
+//                                              endRect.y + (endRect.height / 2));
+        
+        //Variables for the loop
+        boolean stopX = false;
+        boolean stopY = false;
+        boolean stopWidth = false;
+        boolean stopHeight = false;
+        int incrementationAmount = 2;
+        int waitTime = 100;
+        //Keep going through a loop until the animated border rect is the same as the end rect
+        while (!stopX || !stopY || !stopWidth || !stopHeight) {
+            //Add onto the rect to widen it but only if they aren't already at their max
+            if (!stopX)
+                currentRect.x -= incrementationAmount;
+            if (!stopY)
+                currentRect.y -= incrementationAmount;
+            if (!stopWidth)
+                currentRect.width += incrementationAmount;
+            if (!stopHeight)
+                currentRect.height += incrementationAmount;
+
+            //Clear the area the border will take up on the terminal
+            gameTerminal.clear (' ',
+                                currentRect.x,
+                                currentRect.y,
+                                currentRect.width,
+                                currentRect.height);
+            //Now draw the border onto the screen
+            drawBorder (currentRect,
+                        gameTerminal,
+                        AsciiPanel.white,
+                        null,
+                        "");
+            //Now repaint the terminal so the changes will actually display
+            gameTerminal.repaint ();
+
+            //Check to see if any of the current rects position data is the same as the end rects and turn that position datas incrementation off.
+            if (currentRect.x <= endRect.x)
+                stopX = true;
+            if (currentRect.y <= endRect.y)
+                stopY = true;
+            if (currentRect.width >= endRect.width)
+                stopWidth = true;
+            if (currentRect.height >= endRect.height)
+                stopHeight = true;
+            
+            //Have the program sleep for a second
+//            try {
+//                Thread.sleep (waitTime);
+//            } catch (InterruptedException ie) {
+//                ie.printStackTrace ();
+//            }
+        }
+    }
+    
     //This function will go through the title_letters.txt file and grab all the letters in arrays for later use
     public static void setupTitleCharacters (InputStream file)
     {

@@ -29,6 +29,16 @@ public class SaveMenu {
     private int saveButtonSelected = 0;
     
     private boolean showExtraMenu = false;
+    
+    private boolean animateExtraMenu = false;
+    private Rect animatedExtraMenuRect;
+    boolean stopX = false;
+    boolean stopY = false;
+    boolean stopWidth = false;
+    boolean stopHeight = false;
+    int incrementationAmount = 2;
+    int waitTime = 100;
+    
     private boolean funcButtonLastState = false;
     private boolean saveButtonLastState = false;
     private int extraMenu = 0;
@@ -79,7 +89,7 @@ public class SaveMenu {
         maxFileNameLength = saveListBorder.width - 6;
     }
     
-    public void drawGUI ()
+    public void drawGUI (GameMain gameMain)
     {
         //Draw the title of the screen
         GameRendering.drawMenuTitle (saveTitlePos.clone (),
@@ -123,6 +133,16 @@ public class SaveMenu {
                                    true);
         
         //Check to see if the extra menu should be open or not
+        if (animateExtraMenu) {
+            displayAnimatedBorder ();
+            if (stopHeight && stopHeight && stopX && stopY) {
+                showExtraMenu = true;
+                animateExtraMenu = false;
+            }
+            //Now keep updating the UI until the border is shown
+            gameMain.updateTerminal ();
+        }
+        
         if (showExtraMenu)
             showExtraMenu ();
     }
@@ -144,12 +164,34 @@ public class SaveMenu {
                                   null,
                                   "Warning!");
         
-        //Find out which menu should be shown (0 = overwrite 1 = delete)
+        //Start to display the menus text
+        gameTerminal.write ("Are you sure you",
+                (extraMenuRect.x + (extraMenuRect.width / 2)) - 8,
+                extraMenuRect.y + 2);
+        
+        //Find out which menu should be shown (0 = overwrite 1 = delete) and display the action they're being warned about
         if (extraMenu == 0) {
-        
+            gameTerminal.write ("want to overwrite",
+                                (extraMenuRect.x + (extraMenuRect.width / 2)) - 8,
+                                extraMenuRect.y + 3);
         } else {
-        
+            gameTerminal.write ("want to delete",
+                    (extraMenuRect.x + (extraMenuRect.width / 2)) - 7,
+                    extraMenuRect.y + 3);
         }
+        
+        //Now display the file they're being warned about
+        gameTerminal.write ("( ",
+                            (extraMenuRect.x + (extraMenuRect.width / 2)) - (userSaves.get (saveButtonSelected).length () / 2) - 2,
+                            extraMenuRect.y + 4,
+                            AsciiPanel.white);
+        gameTerminal.write (userSaves.get (saveButtonSelected),
+                            (extraMenuRect.x + (extraMenuRect.width / 2)) - (userSaves.get (saveButtonSelected).length () / 2),
+                            extraMenuRect.y + 4);
+        gameTerminal.write (" )",
+                            (extraMenuRect.x + (extraMenuRect.width / 2)) + (userSaves.get (saveButtonSelected).length () / 2),
+                            extraMenuRect.y + 4,
+                            AsciiPanel.white);
         
         //Now draw the buttons
         GameRendering.drawButtons (extraMenuButtonPos.clone (),
@@ -259,7 +301,9 @@ public class SaveMenu {
             } else if (funcButtonSelected == 1) {
                 //Show the extra menu to delete the save
                 turnOffButtonControl ();
-                showExtraMenu = true;
+                animateExtraMenu = true;
+                animatedExtraMenuRect = new Rect (extraMenuRect.x + (extraMenuRect.width / 2),
+                                                  extraMenuRect.y + (extraMenuRect.height / 2));
                 extraMenu = 1;
             } else if (funcButtonSelected == 2) {
                 //Reset the variables for the selected buttons
@@ -271,5 +315,53 @@ public class SaveMenu {
                 gameMain.currentMenu = GameMain.Menu.GAME;
             }
         }
+    }
+    
+    //This function will animate the border when it's first being displayed
+    public void displayAnimatedBorder ()
+    {
+        //Create a new Rect that will store the current width/height/position of the animated border
+//        Rect currentRect = new Rect (endRect.x + (endRect.width / 2),
+//                endRect.y + (endRect.height / 2));
+
+        //Add onto the rect to widen it but only if they aren't already at their max
+        if (!stopX)
+            animatedExtraMenuRect.x -= incrementationAmount;
+        if (!stopY)
+            animatedExtraMenuRect.y -= incrementationAmount;
+        if (!stopWidth)
+            animatedExtraMenuRect.width += incrementationAmount;
+        if (!stopHeight)
+            animatedExtraMenuRect.height += incrementationAmount;
+        
+        //Clear the area the border will take up on the terminal
+        gameTerminal.clear (' ',
+                animatedExtraMenuRect.x,
+                animatedExtraMenuRect.y,
+                animatedExtraMenuRect.width,
+                animatedExtraMenuRect.height);
+        //Now draw the border onto the screen
+        GameRendering.drawBorder (animatedExtraMenuRect,
+                gameTerminal,
+                AsciiPanel.white,
+                null,
+                "");
+        
+        //Check to see if any of the current rects position data is the same as the end rects and turn that position datas incrementation off.
+        if (animatedExtraMenuRect.x <= extraMenuRect.x)
+            stopX = true;
+        if (animatedExtraMenuRect.y <= extraMenuRect.y)
+            stopY = true;
+        if (animatedExtraMenuRect.width >= extraMenuRect.width)
+            stopWidth = true;
+        if (animatedExtraMenuRect.height >= extraMenuRect.height)
+            stopHeight = true;
+        
+        //Have the program sleep for a second
+//        try {
+//            Thread.sleep (waitTime);
+//        } catch (InterruptedException ie) {
+//            ie.printStackTrace ();
+//        }
     }
 }

@@ -127,7 +127,7 @@ public class GameMain extends JFrame implements KeyListener {
         else if (currentMenu == Menu.GAME)
             gameMenu.drawGUI ();
         else if (currentMenu == Menu.SAVE)
-            saveMenu.drawGUI ();
+            saveMenu.drawGUI (this);
         else if (currentMenu == Menu.LOAD)
             loadMenu.drawGUI ();
         
@@ -226,7 +226,7 @@ public class GameMain extends JFrame implements KeyListener {
         else if (currentMenu == Menu.SAVE)
             saveMenu.changeButtonControl (change);
         else if (currentMenu == Menu.LOAD)
-            loadMenu.changeButtonControl ();
+            loadMenu.changeButtonControl (change);
     }
     
     public void keyReleased (KeyEvent event)
