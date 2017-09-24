@@ -95,7 +95,7 @@ public class PlayGameMenu {
     
         //Check to see if the user is trying to open the pause menu. If so animate it to open
         if (animatePauseMenu) {
-            if (GameRendering.displayAnimatedBorder (pauseMenuBorder, animatedPauseMenuRect, gameTerminal, 1, "Pause Menu")) {
+            if (GameRendering.displayAnimatedBorder (pauseMenuBorder, animatedPauseMenuRect, gameTerminal, 1, "Pause Menu", false)) {
                 pauseMenuOpen = true;
                 animatePauseMenu = false;
                 gameMain.setUpdateTerminalTimer (false);
@@ -104,7 +104,7 @@ public class PlayGameMenu {
     
         //Check to see if the pause menu should be hidden
         if (hidePauseMenu) {
-            if (GameRendering.hideAnimatedBorder (pauseMenuBorder, animatedPauseMenuRect, gameTerminal, 1, "Pause Menu")) {
+            if (GameRendering.hideAnimatedBorder (pauseMenuBorder, animatedPauseMenuRect, gameTerminal, 1, "Pause Menu", false)) {
                 hidePauseMenu = false;
                 gameTerminal.clear (' ',
                                     animatedPauseMenuRect.x,
@@ -146,7 +146,9 @@ public class PlayGameMenu {
         if (!pauseMenuOpen) {
             animatePauseMenu = true;
             animatedPauseMenuRect = new Rect (pauseMenuBorder.x + (pauseMenuBorder.width / 2),
-                                              pauseMenuBorder.y + (pauseMenuBorder.height / 2));
+                                              pauseMenuBorder.y + (pauseMenuBorder.height / 2),
+                                              2,
+                                              2);
         } else {
             hidePauseMenu = true;
             pauseMenuOpen = false;

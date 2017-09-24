@@ -84,41 +84,45 @@ public class GameRendering {
     }
     
     //This function will animate the border when it's first being displayed
-    public static boolean displayAnimatedBorder (Rect endRect, Rect animatedRect, AsciiPanel gameTerminal, int incrementationAmount, String title)
+    public static boolean displayAnimatedBorder (Rect endRect, Rect animatedRect, AsciiPanel gameTerminal, int incrementationAmount, String title, boolean widthThenHeight)
     {
         //Set up the needed bools
         boolean stopX = false;
         boolean stopY = false;
         boolean stopWidth = false;
         boolean stopHeight = false;
-        
-        //Add onto the rect to widen it but only if they aren't already at their max
-        if (!stopX)
-            animatedRect.x -= incrementationAmount;
-        if (!stopY)
-            animatedRect.y -= incrementationAmount;
-        if (!stopWidth)
-            animatedRect.width += incrementationAmount * 2;
-        if (!stopHeight)
-            animatedRect.height += incrementationAmount * 2;
     
         //Check to see if any of the current rects position data is the same as the end rects and turn that position datas incrementation off.
-        if (animatedRect.x <= endRect.x) {
+        if (animatedRect.x <= endRect.x)
             stopX = true;
-            animatedRect.x = endRect.x;
-        }
-        if (animatedRect.y <= endRect.y) {
+        if (animatedRect.y <= endRect.y)
             stopY = true;
-            animatedRect.y = endRect.y;
-        }
-        if (animatedRect.width >= endRect.width) {
+        if (animatedRect.width >= endRect.width)
             stopWidth = true;
-            animatedRect.width = endRect.width;
-        }
-        if (animatedRect.height >= endRect.height) {
+        if (animatedRect.height >= endRect.height)
             stopHeight = true;
+        
+        //Add onto the rect to widen it but only if they aren't already at their max
+        if (!stopX && ((stopY && stopHeight) || widthThenHeight))
+            animatedRect.x -= incrementationAmount;
+        if (!stopY && ((stopX && stopWidth) || !widthThenHeight))
+            animatedRect.y -= incrementationAmount;
+        if (!stopWidth && ((stopY && stopHeight) || widthThenHeight))
+            animatedRect.width += incrementationAmount * 2;
+        if (!stopHeight && ((stopX && stopWidth) || !widthThenHeight))
+            animatedRect.height += incrementationAmount * 2;
+    
+        if (animatedRect.x <= endRect.x)
+            animatedRect.x = endRect.x;
+        
+        if (animatedRect.y <= endRect.y)
+            animatedRect.y = endRect.y;
+        
+        if (animatedRect.width >= endRect.width)
+            animatedRect.width = endRect.width;
+        
+        if (animatedRect.height >= endRect.height)
             animatedRect.height = endRect.height;
-        }
         
         //Clear the area the border will take up on the terminal
         gameTerminal.clear (' ',
@@ -129,7 +133,7 @@ public class GameRendering {
         
         //Figure out how much of the title should be displayed on the border so far
         String titleToShow = "";
-        if (title != "" && animatedRect.width > 2) {
+        if (title != "" && animatedRect.width > 3) {
             //Check to see if the width is longer then the title and if so just set it to the title
             if (animatedRect.width < title.length ()) {
                 //Get the substring from 0 to how big the width is minus the sides (2)
@@ -153,7 +157,7 @@ public class GameRendering {
     }
     
     //This function will animate the border when it's being closed
-    public static boolean hideAnimatedBorder (Rect endRect, Rect animatedRect, AsciiPanel gameTerminal, int incrementationAmount, String title)
+    public static boolean hideAnimatedBorder (Rect endRect, Rect animatedRect, AsciiPanel gameTerminal, int incrementationAmount, String title, boolean widthThenHeight)
     {
         //Set up the needed bools
         boolean stopX = false;
@@ -164,34 +168,39 @@ public class GameRendering {
         //Get the middle of the border
         Vector2D middle = new Vector2D (endRect.x + (endRect.width / 2),
                                         endRect.y + (endRect.height / 2));
+    
+        //Check to see if any of the current rects position data is the same as the end rects and turn that position datas incrementation off.
+        if (animatedRect.x >= middle.x - 1)
+            stopX = true;
+        if (animatedRect.y >= middle.y - 1)
+            stopY = true;
+        if (animatedRect.width <= 2)
+            stopWidth = true;
+        if (animatedRect.height <= 2)
+            stopHeight = true;
         
         //Add onto the rect to widen it but only if they aren't already at their max
-        if (!stopX)
+        if (!stopX && ((stopY && stopHeight) || !widthThenHeight))
             animatedRect.x += incrementationAmount;
-        if (!stopY)
+        if (!stopY && ((stopX && stopWidth) || widthThenHeight))
             animatedRect.y += incrementationAmount;
-        if (!stopWidth)
+        if (!stopWidth && ((stopY && stopHeight) || !widthThenHeight))
             animatedRect.width -= incrementationAmount * 2;
-        if (!stopHeight)
+        if (!stopHeight && ((stopX && stopWidth) || widthThenHeight))
             animatedRect.height -= incrementationAmount * 2;
-        
-        //Check to see if any of the current rects position data is the same as the end rects and turn that position datas incrementation off.
-        if (animatedRect.x >= middle.x - 1) {
-            stopX = true;
+    
+        //Reset the positions to their max if they're over
+        if (animatedRect.x >= middle.x - 1)
             animatedRect.x = middle.x - 1;
-        }
-        if (animatedRect.y >= middle.y - 1) {
-            stopY = true;
+        
+        if (animatedRect.y >= middle.y - 1)
             animatedRect.y = middle.y - 1;
-        }
-        if (animatedRect.width <= 2) {
-            stopWidth = true;
+        
+        if (animatedRect.width <= 2)
             animatedRect.width = 2;
-        }
-        if (animatedRect.height <= 2) {
-            stopHeight = true;
+        
+        if (animatedRect.height <= 2)
             animatedRect.height = 2;
-        }
         
         //Clear the area the border will take up on the terminal
         gameTerminal.clear (' ',
@@ -202,7 +211,7 @@ public class GameRendering {
         
         //Figure out how much of the title should be displayed on the border so far
         String titleToShow = "";
-        if (title != "" && animatedRect.width > 2) {
+        if (title != "" && animatedRect.width > 3) {
             //Check to see if the width is longer then the title and if so just set it to the title
             if (animatedRect.width < title.length ()) {
                 //Get the substring from 0 to how big the width is minus the sides (2)
@@ -394,5 +403,11 @@ public class GameRendering {
                 startPos.x += buttonNames.get (i).length () + " ]".length () + buttonSpace;
             }
         }
+    }
+    
+    //This will display a message within a border
+    public static void displayMessage (Rect messageBorder, String borderTitle, String message, GameMain gameMain)
+    {
+    
     }
 }

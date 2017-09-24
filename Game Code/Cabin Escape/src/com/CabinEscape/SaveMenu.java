@@ -129,7 +129,7 @@ public class SaveMenu {
         
         //Check to see if the extra menu should be open or not
         if (animateExtraMenu) {
-            if (GameRendering.displayAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!")) {
+            if (GameRendering.displayAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!", true)) {
                 showExtraMenu = true;
                 animateExtraMenu = false;
                 gameMain.setUpdateTerminalTimer (false);
@@ -138,7 +138,7 @@ public class SaveMenu {
         
         //Check to see if the extra menu should be hidden
         if (hideExtraMenu) {
-            if (GameRendering.hideAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!")) {
+            if (GameRendering.hideAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!", true)) {
                 hideExtraMenu = false;
                 gameTerminal.clear (' ',
                         animatedExtraMenuRect.x,
@@ -221,7 +221,9 @@ public class SaveMenu {
         if (!showExtraMenu) {
             animateExtraMenu = true;
             animatedExtraMenuRect = new Rect (extraMenuRect.x + (extraMenuRect.width / 2),
-                    extraMenuRect.y + (extraMenuRect.height / 2));
+                                              extraMenuRect.y + (extraMenuRect.height / 2),
+                                              2,
+                                              2);
         } else {
             hideExtraMenu = true;
             showExtraMenu = false;

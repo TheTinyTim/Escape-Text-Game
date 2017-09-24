@@ -18,11 +18,11 @@
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
       <file leaf-file-name="GameMain.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/GameMain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="358">
+            <state relative-caret-position="1750">
               <caret line="181" column="46" lean-forward="false" selection-start-line="181" selection-start-column="46" selection-end-line="181" selection-end-column="46" />
               <folding />
             </state>
@@ -32,8 +32,8 @@
       <file leaf-file-name="SaveMenu.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/SaveMenu.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1722">
-              <caret line="236" column="19" lean-forward="true" selection-start-line="236" selection-start-column="19" selection-end-line="236" selection-end-column="19" />
+            <state relative-caret-position="375">
+              <caret line="139" column="28" lean-forward="true" selection-start-line="139" selection-start-column="28" selection-end-line="139" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -42,28 +42,28 @@
       <file leaf-file-name="LoadMenu.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/LoadMenu.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-18">
-              <caret line="306" column="41" lean-forward="false" selection-start-line="306" selection-start-column="41" selection-end-line="306" selection-end-column="41" />
+            <state relative-caret-position="313">
+              <caret line="134" column="121" lean-forward="false" selection-start-line="134" selection-start-column="121" selection-end-line="134" selection-end-column="121" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PlayGameMenu.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PlayGameMenu.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/PlayGameMenu.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="603">
-              <caret line="72" column="47" lean-forward="false" selection-start-line="72" selection-start-column="47" selection-end-line="72" selection-end-column="47" />
+            <state relative-caret-position="788">
+              <caret line="212" column="5" lean-forward="true" selection-start-line="212" selection-start-column="5" selection-end-line="212" selection-end-column="5" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GameRendering.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="GameRendering.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/GameRendering.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="182" column="17" lean-forward="true" selection-start-line="182" selection-start-column="17" selection-end-line="182" selection-end-column="17" />
+            <state relative-caret-position="863">
+              <caret line="407" column="49" lean-forward="true" selection-start-line="407" selection-start-column="49" selection-end-line="407" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -72,7 +72,7 @@
       <file leaf-file-name="AsciiPanel.class" pinned="false" current-in-tab="false">
         <entry file="jar://$PROJECT_DIR$/asciiPanel.jar!/com/asciiPanel/AsciiPanel.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="203">
+            <state relative-caret-position="5950">
               <caret line="276" column="0" lean-forward="false" selection-start-line="276" selection-start-column="0" selection-end-line="276" selection-end-column="0" />
               <folding />
             </state>
@@ -91,10 +91,10 @@
       <list>
         <option value="$PROJECT_DIR$/src/com/CabinEscape/GameMain.java" />
         <option value="$PROJECT_DIR$/src/structs/Rect.java" />
-        <option value="$PROJECT_DIR$/src/com/CabinEscape/GameRendering.java" />
-        <option value="$PROJECT_DIR$/src/com/CabinEscape/SaveMenu.java" />
-        <option value="$PROJECT_DIR$/src/com/CabinEscape/LoadMenu.java" />
         <option value="$PROJECT_DIR$/src/com/CabinEscape/PlayGameMenu.java" />
+        <option value="$PROJECT_DIR$/src/com/CabinEscape/LoadMenu.java" />
+        <option value="$PROJECT_DIR$/src/com/CabinEscape/SaveMenu.java" />
+        <option value="$PROJECT_DIR$/src/com/CabinEscape/GameRendering.java" />
       </list>
     </option>
   </component>
@@ -151,9 +151,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
-      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -176,6 +175,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="AndroidView" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -323,18 +323,18 @@
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293023" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2453125" sideWeight="0.35390428" order="7" side_tool="true" content_ui="tabs" x="102" y="788" width="1912" height="353" />
+      <window_info id="Run" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30260417" sideWeight="0.35813954" order="7" side_tool="true" content_ui="tabs" x="102" y="788" width="1912" height="353" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2453125" sideWeight="0.6460957" order="5" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30260417" sideWeight="0.6418605" order="5" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -354,22 +354,62 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/CabinEscape/GameRendering.java</url>
-          <line>221</line>
-          <properties />
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="4" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/GameMain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4250">
+          <caret line="181" column="46" lean-forward="false" selection-start-line="181" selection-start-column="46" selection-end-line="181" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/SaveMenu.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5900">
+          <caret line="236" column="19" lean-forward="true" selection-start-line="236" selection-start-column="19" selection-end-line="236" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/LoadMenu.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7650">
+          <caret line="306" column="41" lean-forward="false" selection-start-line="306" selection-start-column="41" selection-end-line="306" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/GameRendering.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4550">
+          <caret line="182" column="17" lean-forward="true" selection-start-line="182" selection-start-column="17" selection-end-line="182" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://$PROJECT_DIR$/asciiPanel.jar!/com/asciiPanel/AsciiPanel.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="203">
+        <state relative-caret-position="6900">
+          <caret line="276" column="0" lean-forward="false" selection-start-line="276" selection-start-column="0" selection-end-line="276" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/PlayGameMenu.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1800">
+          <caret line="72" column="47" lean-forward="false" selection-start-line="72" selection-start-column="47" selection-end-line="72" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/asciiPanel.jar!/com/asciiPanel/AsciiPanel.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5950">
           <caret line="276" column="0" lean-forward="false" selection-start-line="276" selection-start-column="0" selection-end-line="276" selection-end-column="0" />
           <folding />
         </state>
@@ -386,42 +426,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/GameRendering.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="182" column="17" lean-forward="true" selection-start-line="182" selection-start-column="17" selection-end-line="182" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/GameMain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
+        <state relative-caret-position="1750">
           <caret line="181" column="46" lean-forward="false" selection-start-line="181" selection-start-column="46" selection-end-line="181" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/SaveMenu.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1722">
-          <caret line="236" column="19" lean-forward="true" selection-start-line="236" selection-start-column="19" selection-end-line="236" selection-end-column="19" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/LoadMenu.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-18">
-          <caret line="306" column="41" lean-forward="false" selection-start-line="306" selection-start-column="41" selection-end-line="306" selection-end-column="41" />
+        <state relative-caret-position="313">
+          <caret line="134" column="121" lean-forward="false" selection-start-line="134" selection-start-column="121" selection-end-line="134" selection-end-column="121" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/SaveMenu.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="139" column="28" lean-forward="true" selection-start-line="139" selection-start-column="28" selection-end-line="139" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/PlayGameMenu.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="603">
-          <caret line="72" column="47" lean-forward="false" selection-start-line="72" selection-start-column="47" selection-end-line="72" selection-end-column="47" />
+        <state relative-caret-position="788">
+          <caret line="212" column="5" lean-forward="true" selection-start-line="212" selection-start-column="5" selection-end-line="212" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/CabinEscape/GameRendering.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="863">
+          <caret line="407" column="49" lean-forward="true" selection-start-line="407" selection-start-column="49" selection-end-line="407" selection-end-column="49" />
           <folding />
         </state>
       </provider>
