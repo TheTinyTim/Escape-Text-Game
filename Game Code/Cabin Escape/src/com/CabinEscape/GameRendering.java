@@ -1,14 +1,16 @@
 package com.CabinEscape;
 
-import com.asciiPanel.AsciiFont;
 import com.asciiPanel.AsciiPanel;
 import com.sun.istack.internal.Nullable;
 import structs.Rect;
 import structs.Vector2D;
 
 import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class GameRendering {
     
@@ -24,64 +26,14 @@ public class GameRendering {
     public static Map<String, ArrayList<String>> terminalTitleLetters = new HashMap<String, ArrayList<String>> ();
     private static final int LETTER_SPACE = 2;
     
-    //This class will hold all te functions needed to help with rendering onto the ASCII Terminal
-    
-    //This will draw a border onto the game terminal with no title
-//    public static void drawBorder (Rect bounds, AsciiPanel gameTerminal, @Nullable Color foreground, @Nullable Color background)
-//    {
-//        //Get the needed variables to loop through the area needed to make the border
-//        int xMax = bounds.x + bounds.width;
-//        int yMax = bounds.x + bounds.height;
-//
-//        //Now loop through all the x and y points
-//        for (int y = 0; y <= yMax; y++) {
-//            //Get the actual spot on the terminal that this will be on
-//            int yPos = bounds.y + y;
-//
-//            for (int x = 0; x <= xMax; x++) {
-//                //Get the actual spot on the terminal that this will be on
-//                int xPos = bounds.x + x;
-//
-//                //Set up the variable that will be drawn onto the screen
-//                int thingToDraw = -1;
-//
-//                //Now find out what kind of pipe needs to be used based on the current x/y location
-//                //being drawn to.
-//                if (y == 0) {
-//                    //The top of the border
-//                    if (x == 0)
-//                        thingToDraw = PIPE_DOWN_RIGHT;
-//                    else if (x == xMax)
-//                        thingToDraw = PIPE_DOWN_LEFT;
-//                    else
-//                        thingToDraw = PIPE_HORIZONTAL;
-//                } else if (y > bounds.y && y < yMax) {
-//                    //Everything in the middle of the border
-//                    if (x == 0 || x == xMax)
-//                        thingToDraw = PIPE_VERTICAL;
-//                } else if (y == yMax) {
-//                    //The bottom of the border
-//                    if (x == 0)
-//                        thingToDraw = PIPE_UP_RIGHT;
-//                    else if (x == xMax)
-//                        thingToDraw = PIPE_UP_LEFT;
-//                    else
-//                        thingToDraw = PIPE_HORIZONTAL;
-//                }
-//
-//                //Now draw what needs to be drawn in the spot only if something was set on that spot
-//                if (thingToDraw != -1)
-//                    gameTerminal.write ((char)thingToDraw, xPos, yPos, foreground, background);
-//            }
-//        }
-//    }
+    //This class will hold all the functions needed to help with rendering onto the ASCII Terminal
     
     //This will draw a border onto the game terminal with a title
     public static void drawBorder (Rect bounds, AsciiPanel gameTerminal, @Nullable Color foreground, @Nullable Color background, String title)
     {
         //Get the needed variables to loop through the area needed to make the border
-        int xMax = bounds.x + bounds.width;
-        int yMax = bounds.x + bounds.height;
+        int xMax = bounds.width - 1;
+        int yMax = bounds.height - 1;
     
         //Now loop through all the x and y points
         for (int y = 0; y <= yMax; y++) {
@@ -110,7 +62,7 @@ public class GameRendering {
                     } else {
                         thingToDraw = PIPE_HORIZONTAL;
                     }
-                } else if (y > bounds.y && y < yMax) {
+                } else if (y > 0 && y < yMax) {
                     //Everything in the middle of the border
                     if (x == 0 || x == xMax)
                         thingToDraw = PIPE_VERTICAL;
@@ -163,7 +115,7 @@ public class GameRendering {
         title = title.toUpperCase ();
         
         //Make a temp of start pos so that if the user passes a already stored one it won't change that in memory
-        Vector2D tempStartPos = new Vector2D (startPos.x, startPos.y);
+        //Vector2D tempStartPos = new Vector2D (startPos.x, startPos.y);
         
         //Setup the variables needed for the loop
         
@@ -213,7 +165,7 @@ public class GameRendering {
             startPos.x += largestLine + LETTER_SPACE;
         }
         //Set start pos back to what it originally was
-        startPos.set (tempStartPos);
+        //startPos.set (tempStartPos);
     }
     
     //Create a function that will give the total length of a string for a title plus spaces
@@ -252,18 +204,46 @@ public class GameRendering {
         return length;
     }
     
-    //Create a function that will draw a list of selectable buttons
-    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, int buttonSpace, int selected, AsciiPanel gameTerminal, Color bracketColor, Color foreground)
+    //Create all the different constructors for the button draw method
+    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected)
     {
+        drawButtons (startPos, buttonNames, gameTerminal, selected, 1, AsciiPanel.yellow, true, true, null, null, false);
+    }
+    
+    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace)
+    {
+        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, true, true, null, null, false);
+    }
+    
+    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace, Color bracketColor)
+    {
+        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, true, true, null, null, false);
+    }
+    
+    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace, Color bracketColor, boolean showSelected, boolean canControl)
+    {
+        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, showSelected, canControl, null, null, false);
+    }
+    
+    //Create a function that will draw a list of selectable buttons
+    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace, Color bracketColor, boolean showSelected, boolean canControl, @Nullable Color foreground,  @Nullable Color background, boolean selectBackground)
+    {
+        //Create a temp variable that will hold the start pos so it can be stored again after the function
+        //Vector2D tempPos = startPos.clone ();
         //Go through all the buttons and display them on screen
         for (int i = 0; i < buttonNames.size (); i++){
             //Determine if this button is currently the selected button
-            if (selected == i) {
-                gameTerminal.write ("[", startPos.x - 2, startPos.y, bracketColor);
-                gameTerminal.write ("]", startPos.x + buttonNames.get (i).length () + 1, startPos.y, bracketColor);
+            if (selected == i && showSelected) {
+                if (selectBackground) {
+                    gameTerminal.write (buttonNames.get (i), startPos.x, startPos.y, foreground, background);
+                } else {
+                    gameTerminal.write ("[", startPos.x - 2, startPos.y, bracketColor);
+                    gameTerminal.write ("]", startPos.x + buttonNames.get (i).length () + 1, startPos.y, bracketColor);
+                }
             }
             
-            gameTerminal.write (buttonNames.get (i), startPos.x, startPos.y, foreground);
+            if (!selectBackground || selected != i)
+                gameTerminal.write (buttonNames.get (i), startPos.x, startPos.y, foreground);
             
             startPos.y += buttonSpace;
         }

@@ -48,4 +48,9 @@ public class Vector2D {
         this.x = v.x;
         this.y = v.y;
     }
+    
+    public Vector2D clone ()
+    {
+        return new Vector2D (this.x, this.y);
+    }
 }

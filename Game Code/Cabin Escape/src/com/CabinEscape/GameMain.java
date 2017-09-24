@@ -3,14 +3,10 @@ package com.CabinEscape;
 import com.asciiPanel.AsciiFont;
 import com.asciiPanel.AsciiPanel;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
 
 public class GameMain extends JFrame implements KeyListener {
     
@@ -28,7 +24,19 @@ public class GameMain extends JFrame implements KeyListener {
     //https://stackoverflow.com/questions/285793/what-is-a-serialversionuid-and-why-should-i-use-it
     private static final long serialVersionUID = 1060623638149583738L;
     
+    //Enums
+    public enum Menu {
+        MAIN,
+        GAME,
+        SETTINGS,
+        SAVE,
+        LOAD
+    }
+    
+    //Public variables
     public static GameMain gameRenderer;
+    
+    public boolean gameIsGoing = false;
     
     //Initialize the variable that will store the ASCII Terminal for later use and creation
     private AsciiPanel gameTerminal;
@@ -39,7 +47,10 @@ public class GameMain extends JFrame implements KeyListener {
     //All the menus
     private MainMenu mainMenu;
     private SettingsMenu settingsMenu;
-    public int currentMenu = 0;
+    private PlayGameMenu gameMenu;
+    private SaveMenu saveMenu;
+    private LoadMenu loadMenu;
+    public Menu currentMenu = Menu.MAIN;
     
     private String onScreenTyping = "";
     
@@ -91,6 +102,9 @@ public class GameMain extends JFrame implements KeyListener {
         //Instantiate all the menus
         mainMenu = new MainMenu (gameSettings, gameTerminal);
         settingsMenu = new SettingsMenu (gameSettings, gameTerminal);
+        gameMenu = new PlayGameMenu (gameSettings, gameTerminal);
+        saveMenu = new SaveMenu (gameSettings, gameTerminal);
+        loadMenu = new LoadMenu (gameSettings, gameTerminal);
         
         updateTerminal ();
     
@@ -106,10 +120,16 @@ public class GameMain extends JFrame implements KeyListener {
         gameTerminal.clear ();
         
         //Draw the menu
-        if (currentMenu == 0)
-            mainMenu.drawMenu ();
-        else if (currentMenu == 1)
-            settingsMenu.drawMenu ();
+        if (currentMenu == Menu.MAIN)
+            mainMenu.drawGUI ();
+        else if (currentMenu == Menu.SETTINGS)
+            settingsMenu.drawGUI ();
+        else if (currentMenu == Menu.GAME)
+            gameMenu.drawGUI ();
+        else if (currentMenu == Menu.SAVE)
+            saveMenu.drawGUI ();
+        else if (currentMenu == Menu.LOAD)
+            loadMenu.drawGUI ();
         
         //Now repaint the terminal so the changes will actually display
         gameTerminal.repaint ();
@@ -125,6 +145,30 @@ public class GameMain extends JFrame implements KeyListener {
          *      39 = Right Arrow
          *      37 = Left Arrow
          */
+        
+        //Check to see if the user has typed anything while in the game menu
+        if (currentMenu == Menu.GAME) {
+            //Check to see if the user is trying to pause the menu or not
+            if (event.getKeyChar () == KeyEvent.VK_ESCAPE) {
+                //Pause the game
+                gameMenu.changePauseMenu ();
+            //Check to see if the user is trying to delete a character from what they typed.
+            } else if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE) {
+                if (!gameMenu.userInput.equals (""))
+                    gameMenu.userInput = gameMenu.userInput.substring (0, gameMenu.userInput.length () - 1);
+            } else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER) {
+                //First make sure that the user string isn't longer then how many characters can fit into the border
+                if (gameMenu.checkUserInputLength ()) {
+                    //Now only write something to the user input if the user is either not holding the shift key or when they press the shift key while pressing another key
+                    if (event.isShiftDown () && event.getKeyCode () != 16) {
+                        gameMenu.userInput += event.getKeyChar ();
+                    } else if (!event.isShiftDown ()) {
+                        gameMenu.userInput += event.getKeyChar ();
+                    }
+                }
+            }
+        }
+        
         if (event.getKeyCode () == 40)
             changeSelectedButton (1);
         
@@ -147,26 +191,42 @@ public class GameMain extends JFrame implements KeyListener {
     //Function that will call the correct button activation method based on the current menu open
     public void activateButton ()
     {
-        if (currentMenu == 0)
+        if (currentMenu == Menu.MAIN)
             mainMenu.activateSelectedButton (this);
-        else if (currentMenu == 1)
+        else if (currentMenu == Menu.SETTINGS)
             settingsMenu.activateSelectedButton (this);
+        else if (currentMenu == Menu.GAME)
+            gameMenu.activateSelectedButton (this);
+        else if (currentMenu == Menu.SAVE)
+            saveMenu.activateSelectedButton (this);
+        else if (currentMenu == Menu.LOAD)
+            loadMenu.activateSelectedButton (this);
     }
     
     //Function that will call the correct button change selection method based on the current menu open
     public void changeSelectedButton (int change)
     {
-        if (currentMenu == 0)
+        if (currentMenu == Menu.MAIN)
             mainMenu.changeSelectedButton (change);
-        else if (currentMenu == 1)
+        else if (currentMenu == Menu.SETTINGS)
             settingsMenu.changeSelectedButton (change);
+        else if (currentMenu == Menu.GAME)
+            gameMenu.changeSelectedButton (change);
+        else if (currentMenu == Menu.SAVE)
+            saveMenu.changeSelectedButton (change);
+        else if (currentMenu == Menu.LOAD)
+            loadMenu.changeSelectedButton (change);
     }
     
     //Function that will call te correct button incrementation method based on the current menu open
     public void incrementSelectedButton (int change)
     {
-        if (currentMenu == 1)
+        if (currentMenu == Menu.SETTINGS)
             settingsMenu.changeSoundLevel (change);
+        else if (currentMenu == Menu.SAVE)
+            saveMenu.changeButtonControl ();
+        else if (currentMenu == Menu.LOAD)
+            loadMenu.changeButtonControl ();
     }
     
     public void keyReleased (KeyEvent event)

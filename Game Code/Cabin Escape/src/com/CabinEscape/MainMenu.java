@@ -1,15 +1,8 @@
 package com.CabinEscape;
 
-import javax.swing.*;
 import com.asciiPanel.AsciiPanel;
-import com.asciiPanel.AsciiFont;
-import structs.Rect;
 import structs.Vector2D;
-import sun.misc.IOUtils;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class MainMenu {
@@ -39,7 +32,7 @@ public class MainMenu {
     }
     
     //Draw the menu
-    public void drawMenu ()
+    public void drawGUI ()
     {
 //        GameRendering.drawBorder (new Rect (0, 0, 30, 30),
 //                                  gameTerminal,
@@ -60,13 +53,14 @@ public class MainMenu {
                                                    gameTerminal,
                                                    AsciiPanel.red);
         
-        GameRendering.drawButtons (new Vector2D ((gameSettings.gameWindowWidth / 2) - 6, (gameSettings.gameWindowHeight / 2) + 5),
-                                                 buttons,
-                                                 BUTTON_SPACE,
-                                                 selectedButton,
-                                                 gameTerminal,
-                                                 AsciiPanel.yellow,
-                                                 AsciiPanel.white);
+        GameRendering.drawButtons (new Vector2D ((gameSettings.gameWindowWidth / 2) - 6, (gameSettings.gameWindowHeight / 2) + 15),
+                                   buttons,
+                                   gameTerminal,
+                                   selectedButton,
+                                   BUTTON_SPACE,
+                                   AsciiPanel.yellow,
+                                   true,
+                                   true);
     }
     
     //Create the function that will handle changing the selected button
@@ -91,21 +85,27 @@ public class MainMenu {
             if (hasSaveGame) {
                 //TODO Continue game
             } else {
-                //TODO New Game
+                //Tell the program the game is running
+                gameMain.gameIsGoing = true;
+                //Start the main game and display the GUI
+                gameMain.currentMenu = GameMain.Menu.GAME;
             }
         } else if (selectedButton == 1) {
             //Check to see if the game currently has a save game if so the button will be different if it doesn't
             if (hasSaveGame) {
-                //TODO New Game
+                //Tell the program the game is running
+                gameMain.gameIsGoing = true;
+                //Start the main game and display the GUI
+                gameMain.currentMenu = GameMain.Menu.GAME;
             } else {
                 //Change the menu to the settings menu
-                gameMain.currentMenu = 1;
+                gameMain.currentMenu = GameMain.Menu.SETTINGS;
             }
         } else if (selectedButton == 2) {
             //Check to see if the game currently has a save game if so the button will be different if it doesn't
             if (hasSaveGame) {
                 //Change the menu to the settings menu
-                gameMain.currentMenu = 1;
+                gameMain.currentMenu = GameMain.Menu.SETTINGS;
             } else {
                 //Close the window and stop the application
                 gameMain.dispose ();

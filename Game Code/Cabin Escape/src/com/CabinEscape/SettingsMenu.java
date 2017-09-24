@@ -36,45 +36,45 @@ public class SettingsMenu {
         //Set up all the positions of the GUI for this menu
         titlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength (title), 5);
         buttonStartPos = new Vector2D (gameSettings.gameWindowWidth / 2, gameSettings.gameWindowHeight / 2);
-        soundPercentagePos = buttonStartPos;
+        soundPercentagePos = buttonStartPos.clone ();
     }
     
-    public void drawMenu ()
+    public void drawGUI ()
     {
-        System.out.println (titlePos.x + " " + titlePos.y);
         //Draw the title of this menu
-        GameRendering.drawMenuTitle (titlePos,
+        GameRendering.drawMenuTitle (titlePos.clone (),
                                      title,
                                      gameTerminal,
                                      AsciiPanel.white);
         
         //Draw the buttons
-        GameRendering.drawButtons (buttonStartPos,
+        GameRendering.drawButtons (buttonStartPos.clone (),
                                    buttons,
-                                   BUTTON_SPACE,
-                                   selectedButton,
                                    gameTerminal,
+                                   selectedButton,
+                                   BUTTON_SPACE,
                                    AsciiPanel.yellow,
-                                   AsciiPanel.white);
+                                   true,
+                                   true);
         
         //Draw the percentages of the sounds next to the selections
         //First get all the percentages
-        int masterPercentage = (gameSettings.masterSound / gameSettings.SOUND_MAX) * 100;
-        int musicPercentage = (gameSettings.musicSound / gameSettings.SOUND_MAX) * 100;
-        int fxPercentage = (gameSettings.fxSound / gameSettings.SOUND_MAX) * 100;
+        int masterPercentage = (int)((gameSettings.masterSound / gameSettings.SOUND_MAX) * 100);
+        int musicPercentage = (int)((gameSettings.musicSound / gameSettings.SOUND_MAX) * 100);
+        int fxPercentage = (int)((gameSettings.fxSound / gameSettings.SOUND_MAX) * 100);
         
         //Now actually draw the percentages
         //Master Sound
         gameTerminal.write ("[" + masterPercentage + "%]",
-                            soundPercentagePos.x + 4,
+                            soundPercentagePos.x + buttons.get (0).length () + 4,
                             soundPercentagePos.y);
         //Music Sound
         gameTerminal.write ("[" + musicPercentage + "%]",
-                            soundPercentagePos.x + 4,
+                            soundPercentagePos.x + buttons.get (0).length () + 4,
                             soundPercentagePos.y + BUTTON_SPACE);
         //FX Sound
         gameTerminal.write ("[" + fxPercentage + "%]",
-                            soundPercentagePos.x + 4,
+                            soundPercentagePos.x + buttons.get (0).length () + 4,
                             soundPercentagePos.y + (BUTTON_SPACE * 2));
     }
     
@@ -94,6 +94,7 @@ public class SettingsMenu {
     //Create the function that will handle changing sound levels
     public void changeSoundLevel (int change)
     {
+        //System.out.println (gameSettings.masterSound);
         //Find out which sound is being changed
         if (selectedButton == 0) {
             //Lower or raise the Master sound but only if it's not 0 or the max
@@ -120,14 +121,19 @@ public class SettingsMenu {
             else if (gameSettings.fxSound == gameSettings.SOUND_MAX && change < 0)
                 gameSettings.fxSound += change;
         }
+        //System.out.println (gameSettings.masterSound);
     }
     
     //Create the function that will handle the user pressing the enter button on the current selected button
     public void activateSelectedButton (GameMain gameMain)
     {
         //Check to see what button is being selected and do what needs to be done
-        if (selectedButton == 4){
-            gameMain.currentMenu = 0;
+        if (selectedButton == 3){
+            //Display the correct menu based on if the user was playing the game when this menu was opened
+            if (gameMain.gameIsGoing)
+                gameMain.currentMenu = GameMain.Menu.GAME;
+            else
+                gameMain.currentMenu = GameMain.Menu.MAIN;
         }
     }
 }

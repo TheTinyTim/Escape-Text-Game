@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Cabin Escape:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Cabin_Escape_jar</output-path>
+    <root id="archive" name="Cabin Escape.jar">
+      <element id="module-output" name="Cabin Escape" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/AsciiPanel.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
