@@ -4,6 +4,8 @@ import com.asciiPanel.AsciiFont;
 import com.asciiPanel.AsciiPanel;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.InputStream;
@@ -37,6 +39,7 @@ public class GameMain extends JFrame implements KeyListener {
     public static GameMain gameRenderer;
     
     public boolean gameIsGoing = false;
+    public boolean keepUpdating = false;
     
     //Initialize the variable that will store the ASCII Terminal for later use and creation
     private AsciiPanel gameTerminal;
@@ -53,6 +56,8 @@ public class GameMain extends JFrame implements KeyListener {
     public Menu currentMenu = Menu.MAIN;
     
     private String onScreenTyping = "";
+    
+    Timer timer;
     
     public static void main(String[] args) {
         //Create a new GameMain class to start the game
@@ -106,6 +111,16 @@ public class GameMain extends JFrame implements KeyListener {
         saveMenu = new SaveMenu (gameSettings, gameTerminal);
         loadMenu = new LoadMenu (gameSettings, gameTerminal);
         
+        //Set up the timer to continually update if needed by the program
+        ActionListener al = new ActionListener () {
+            @Override
+            public void actionPerformed (ActionEvent e)
+            {
+                updateTerminal ();
+            }
+        };
+        timer = new Timer (30, al);
+        
         updateTerminal ();
     
         //Set how the application closes
@@ -125,14 +140,27 @@ public class GameMain extends JFrame implements KeyListener {
         else if (currentMenu == Menu.SETTINGS)
             settingsMenu.drawGUI ();
         else if (currentMenu == Menu.GAME)
-            gameMenu.drawGUI ();
+            gameMenu.drawGUI (this);
         else if (currentMenu == Menu.SAVE)
             saveMenu.drawGUI (this);
         else if (currentMenu == Menu.LOAD)
-            loadMenu.drawGUI ();
+            loadMenu.drawGUI (this);
         
         //Now repaint the terminal so the changes will actually display
         gameTerminal.repaint ();
+        
+        //Check to see if the terminal should be continually updated
+        if (keepUpdating)
+            updateTerminal ();
+    }
+    
+    //This will start the timer to keep updating the terminal
+    public void setUpdateTerminalTimer (boolean on)
+    {
+        if (on)
+            timer.start ();
+        else
+            timer.stop ();
     }
     
     //Set up all the methods needed to extend KeyListener
@@ -151,7 +179,7 @@ public class GameMain extends JFrame implements KeyListener {
             //Check to see if the user is trying to pause the menu or not
             if (event.getKeyChar () == KeyEvent.VK_ESCAPE) {
                 //Pause the game
-                gameMenu.changePauseMenu ();
+                gameMenu.changePauseMenu (this);
             //Check to see if the user is trying to delete a character from what they typed.
             } else if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE) {
                 if (!gameMenu.userInput.equals (""))

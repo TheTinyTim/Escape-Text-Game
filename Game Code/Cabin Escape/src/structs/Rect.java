@@ -1,7 +1,5 @@
 package structs;
 
-import java.util.Vector;
-
 public class Rect {
     
     //The variables used in this struct
@@ -113,5 +111,11 @@ public class Rect {
             return true;
         else
             return false;
+    }
+    
+    //Clone this rect
+    public Rect clone ()
+    {
+        return new Rect (this.x, this.y, this.width, this.height);
     }
 }

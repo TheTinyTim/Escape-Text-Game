@@ -28,6 +28,10 @@ public class LoadMenu {
     private boolean controlSaveButtons = true;
     private int saveButtonSelected = 0;
     
+    public boolean animateExtraMenu = false;
+    public boolean hideExtraMenu = false;
+    private Rect animatedExtraMenuRect;
+    
     private boolean showExtraMenu = false;
     private boolean funcButtonLastState = false;
     private boolean saveButtonLastState = false;
@@ -74,7 +78,7 @@ public class LoadMenu {
         extraMenuButtons.add ("No");
     }
     
-    public void drawGUI ()
+    public void drawGUI (GameMain gameMain)
     {
         //Draw the title of the screen
         GameRendering.drawMenuTitle (loadTitlePos.clone (),
@@ -117,6 +121,30 @@ public class LoadMenu {
                                    true,
                                    true);
     
+        //Check to see if the extra menu should be open or not
+        if (animateExtraMenu) {
+            if (GameRendering.displayAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!")) {
+                showExtraMenu = true;
+                animateExtraMenu = false;
+                gameMain.setUpdateTerminalTimer (false);
+            }
+        }
+    
+        //Check to see if the extra menu should be hidden
+        if (hideExtraMenu) {
+            if (GameRendering.hideAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!")) {
+                hideExtraMenu = false;
+                gameTerminal.clear (' ',
+                        animatedExtraMenuRect.x,
+                        animatedExtraMenuRect.y,
+                        animatedExtraMenuRect.width,
+                        animatedExtraMenuRect.height);
+                gameMain.setUpdateTerminalTimer (false);
+                turnOnButtonControl ();
+                drawGUI (gameMain);
+            }
+        }
+        
         //Check to see if the extra menu should be open or not
         if (showExtraMenu)
             showExtraMenu ();
@@ -181,6 +209,20 @@ public class LoadMenu {
                 null,
                 false,
                 false);
+    }
+    
+    private void setupAnimatedBorder (GameMain gameMain)
+    {
+        if (!showExtraMenu) {
+            animateExtraMenu = true;
+            animatedExtraMenuRect = new Rect (extraMenuRect.x + (extraMenuRect.width / 2),
+                    extraMenuRect.y + (extraMenuRect.height / 2));
+        } else {
+            hideExtraMenu = true;
+            showExtraMenu = false;
+            animatedExtraMenuRect = extraMenuRect.clone ();
+        }
+        gameMain.setUpdateTerminalTimer (true);
     }
     
     //Create the function that will handle changing the selected button
@@ -262,12 +304,11 @@ public class LoadMenu {
             }
             selectedExtraMenuButton = 1;
             extraMenu = 0;
-            turnOnButtonControl ();
-            showExtraMenu = false;
+            setupAnimatedBorder (gameMain);
         } else if (controlSaveButtons) {
             //Show the extra menu to load the save
             turnOffButtonControl ();
-            showExtraMenu = true;
+            setupAnimatedBorder (gameMain);
             extraMenu = 0;
         } else {
             if (funcButtonSelected == 0) {
@@ -278,7 +319,7 @@ public class LoadMenu {
             } else if (funcButtonSelected == 1) {
                 //Show the extra menu to delete the currently selected save file
                 turnOffButtonControl ();
-                showExtraMenu = true;
+                setupAnimatedBorder (gameMain);
                 extraMenu = 1;
             } else if (funcButtonSelected == 2) {
                 //Reset the variables for the selected buttons

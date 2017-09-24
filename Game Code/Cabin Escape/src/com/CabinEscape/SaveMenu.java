@@ -30,14 +30,9 @@ public class SaveMenu {
     
     private boolean showExtraMenu = false;
     
-    private boolean animateExtraMenu = false;
+    public boolean animateExtraMenu = false;
+    public boolean hideExtraMenu = false;
     private Rect animatedExtraMenuRect;
-    boolean stopX = false;
-    boolean stopY = false;
-    boolean stopWidth = false;
-    boolean stopHeight = false;
-    int incrementationAmount = 2;
-    int waitTime = 100;
     
     private boolean funcButtonLastState = false;
     private boolean saveButtonLastState = false;
@@ -134,13 +129,26 @@ public class SaveMenu {
         
         //Check to see if the extra menu should be open or not
         if (animateExtraMenu) {
-            displayAnimatedBorder ();
-            if (stopHeight && stopHeight && stopX && stopY) {
+            if (GameRendering.displayAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!")) {
                 showExtraMenu = true;
                 animateExtraMenu = false;
+                gameMain.setUpdateTerminalTimer (false);
             }
-            //Now keep updating the UI until the border is shown
-            gameMain.updateTerminal ();
+        }
+        
+        //Check to see if the extra menu should be hidden
+        if (hideExtraMenu) {
+            if (GameRendering.hideAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!")) {
+                hideExtraMenu = false;
+                gameTerminal.clear (' ',
+                        animatedExtraMenuRect.x,
+                        animatedExtraMenuRect.y,
+                        animatedExtraMenuRect.width,
+                        animatedExtraMenuRect.height);
+                gameMain.setUpdateTerminalTimer (false);
+                turnOnButtonControl ();
+                drawGUI (gameMain);
+            }
         }
         
         if (showExtraMenu)
@@ -206,6 +214,20 @@ public class SaveMenu {
                                    null,
                                    false,
                                    false);
+    }
+    
+    private void setupAnimatedBorder (GameMain gameMain)
+    {
+        if (!showExtraMenu) {
+            animateExtraMenu = true;
+            animatedExtraMenuRect = new Rect (extraMenuRect.x + (extraMenuRect.width / 2),
+                    extraMenuRect.y + (extraMenuRect.height / 2));
+        } else {
+            hideExtraMenu = true;
+            showExtraMenu = false;
+            animatedExtraMenuRect = extraMenuRect.clone ();
+        }
+        gameMain.setUpdateTerminalTimer (true);
     }
     
     //Create the function that will handle changing the selected button
@@ -288,12 +310,11 @@ public class SaveMenu {
             }
             selectedExtraMenuButton = 1;
             extraMenu = 0;
-            turnOnButtonControl ();
-            showExtraMenu = false;
+            setupAnimatedBorder (gameMain);
         } else if (controlSaveButtons) {
             //Show the extra menu to overwrite the save
             turnOffButtonControl ();
-            showExtraMenu = true;
+            setupAnimatedBorder (gameMain);
             extraMenu = 0;
         } else {
             if (funcButtonSelected == 0) {
@@ -301,9 +322,7 @@ public class SaveMenu {
             } else if (funcButtonSelected == 1) {
                 //Show the extra menu to delete the save
                 turnOffButtonControl ();
-                animateExtraMenu = true;
-                animatedExtraMenuRect = new Rect (extraMenuRect.x + (extraMenuRect.width / 2),
-                                                  extraMenuRect.y + (extraMenuRect.height / 2));
+                setupAnimatedBorder (gameMain);
                 extraMenu = 1;
             } else if (funcButtonSelected == 2) {
                 //Reset the variables for the selected buttons
@@ -315,53 +334,5 @@ public class SaveMenu {
                 gameMain.currentMenu = GameMain.Menu.GAME;
             }
         }
-    }
-    
-    //This function will animate the border when it's first being displayed
-    public void displayAnimatedBorder ()
-    {
-        //Create a new Rect that will store the current width/height/position of the animated border
-//        Rect currentRect = new Rect (endRect.x + (endRect.width / 2),
-//                endRect.y + (endRect.height / 2));
-
-        //Add onto the rect to widen it but only if they aren't already at their max
-        if (!stopX)
-            animatedExtraMenuRect.x -= incrementationAmount;
-        if (!stopY)
-            animatedExtraMenuRect.y -= incrementationAmount;
-        if (!stopWidth)
-            animatedExtraMenuRect.width += incrementationAmount;
-        if (!stopHeight)
-            animatedExtraMenuRect.height += incrementationAmount;
-        
-        //Clear the area the border will take up on the terminal
-        gameTerminal.clear (' ',
-                animatedExtraMenuRect.x,
-                animatedExtraMenuRect.y,
-                animatedExtraMenuRect.width,
-                animatedExtraMenuRect.height);
-        //Now draw the border onto the screen
-        GameRendering.drawBorder (animatedExtraMenuRect,
-                gameTerminal,
-                AsciiPanel.white,
-                null,
-                "");
-        
-        //Check to see if any of the current rects position data is the same as the end rects and turn that position datas incrementation off.
-        if (animatedExtraMenuRect.x <= extraMenuRect.x)
-            stopX = true;
-        if (animatedExtraMenuRect.y <= extraMenuRect.y)
-            stopY = true;
-        if (animatedExtraMenuRect.width >= extraMenuRect.width)
-            stopWidth = true;
-        if (animatedExtraMenuRect.height >= extraMenuRect.height)
-            stopHeight = true;
-        
-        //Have the program sleep for a second
-//        try {
-//            Thread.sleep (waitTime);
-//        } catch (InterruptedException ie) {
-//            ie.printStackTrace ();
-//        }
     }
 }
