@@ -94,6 +94,7 @@ public class LoadMenu {
                                    controlSaveButtons,
                                    null,
                                    Color.gray,
+                                   true,
                                    true);
     }
     

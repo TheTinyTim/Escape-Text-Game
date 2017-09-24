@@ -207,26 +207,26 @@ public class GameRendering {
     //Create all the different constructors for the button draw method
     public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected)
     {
-        drawButtons (startPos, buttonNames, gameTerminal, selected, 1, AsciiPanel.yellow, true, true, null, null, false);
+        drawButtons (startPos, buttonNames, gameTerminal, selected, 1, AsciiPanel.yellow, true, true, null, null, false, true);
     }
     
     public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace)
     {
-        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, true, true, null, null, false);
+        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, true, true, null, null, false, true);
     }
     
     public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace, Color bracketColor)
     {
-        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, true, true, null, null, false);
+        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, true, true, null, null, false, true);
     }
     
     public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace, Color bracketColor, boolean showSelected, boolean canControl)
     {
-        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, showSelected, canControl, null, null, false);
+        drawButtons (startPos, buttonNames, gameTerminal, selected, buttonSpace, AsciiPanel.yellow, showSelected, canControl, null, null, false, true);
     }
     
     //Create a function that will draw a list of selectable buttons
-    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace, Color bracketColor, boolean showSelected, boolean canControl, @Nullable Color foreground,  @Nullable Color background, boolean selectBackground)
+    public static void drawButtons (Vector2D startPos, ArrayList<String> buttonNames, AsciiPanel gameTerminal, int selected, int buttonSpace, Color bracketColor, boolean showSelected, boolean canControl, @Nullable Color foreground,  @Nullable Color background, boolean selectBackground, boolean vertical)
     {
         //Create a temp variable that will hold the start pos so it can be stored again after the function
         //Vector2D tempPos = startPos.clone ();
@@ -245,7 +245,12 @@ public class GameRendering {
             if (!selectBackground || selected != i)
                 gameTerminal.write (buttonNames.get (i), startPos.x, startPos.y, foreground);
             
-            startPos.y += buttonSpace;
+            //Find out if this should be vertical or not
+            if (vertical) {
+                startPos.y += buttonSpace;
+            } else {
+                startPos.x += buttonNames.get (i).length () + " ]".length () + buttonSpace;
+            }
         }
     }
 }

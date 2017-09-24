@@ -224,7 +224,7 @@ public class GameMain extends JFrame implements KeyListener {
         if (currentMenu == Menu.SETTINGS)
             settingsMenu.changeSoundLevel (change);
         else if (currentMenu == Menu.SAVE)
-            saveMenu.changeButtonControl ();
+            saveMenu.changeButtonControl (change);
         else if (currentMenu == Menu.LOAD)
             loadMenu.changeButtonControl ();
     }
@@ -236,12 +236,6 @@ public class GameMain extends JFrame implements KeyListener {
     
     public void keyTyped (KeyEvent event)
     {
-//        if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE)
-//            onScreenTyping = onScreenTyping.substring (0, onScreenTyping.length () - 1);
-//        else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER)
-//            onScreenTyping += event.getKeyChar ();
-        
-        //gameTerminal.write (onScreenTyping, 1, 1);
-        //gameTerminal.updateUI ();
+        //System.out.println ("Key Typed");
     }
 }
