@@ -1,15 +1,18 @@
-package com.CabinEscape;
+package com.menus;
 
+import com.CabinEscape.GameMain;
+import com.CabinEscape.GameRendering;
+import com.CabinEscape.GameSettings;
 import com.asciiPanel.AsciiPanel;
-import structs.Vector2D;
+import com.structs.Vector2D;
 
 import java.util.ArrayList;
 
-public class SettingsMenu {
+public class SettingsMenuHandler {
     
     private GameSettings gameSettings;
-    
     private AsciiPanel gameTerminal;
+    private GameMain gameMain;
     
     //GUI settings
     //Title
@@ -23,10 +26,11 @@ public class SettingsMenu {
     private int selectedButton = 0;
     private final int BUTTON_SPACE = 3;
     
-    public SettingsMenu (GameSettings gameSettings, AsciiPanel gameTerminal)
+    public SettingsMenuHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {
         this.gameSettings = gameSettings;
         this.gameTerminal = gameTerminal;
+        this.gameMain = gameMain;
         
         buttons.add ("Master Sound");
         buttons.add ("Music Sound");
@@ -125,7 +129,7 @@ public class SettingsMenu {
     }
     
     //Create the function that will handle the user pressing the enter button on the current selected button
-    public void activateSelectedButton (GameMain gameMain)
+    public void activateSelectedButton ()
     {
         //Check to see what button is being selected and do what needs to be done
         if (selectedButton == 3){

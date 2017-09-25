@@ -2,8 +2,8 @@ package com.CabinEscape;
 
 import com.asciiPanel.AsciiPanel;
 import com.sun.istack.internal.Nullable;
-import structs.Rect;
-import structs.Vector2D;
+import com.structs.Rect;
+import com.structs.Vector2D;
 
 import java.awt.*;
 import java.io.InputStream;
@@ -415,88 +415,130 @@ public class GameRendering {
                     background,
                     borderTitle);
         
+        //Take the string and split it up by the spaces
+        String[] messageArr = message.split (" ");
         //Now go through the text and find out if there's any rich text tags in it
-        String messageToWrite = "";
-        int xPos = 3;
-        int yPos = 3;
-        for (int i = 0; i < message.length (); i++) {
+        String messageLine = "";
+        String wordToAdd = "";
+        int xPos = messageBorder.x + 3;
+        int yPos = messageBorder.y + 3;
+        //Get the max character length of the message window
+        int maxCharacterLength = messageBorder.width - 4;
+        boolean drawMessage = false;
+        for (int i = 0; i < messageArr.length; i++) {
+            //Check to see if the amount of characters in the message line is at it's max
+            if (drawMessage || messageLine.length () > maxCharacterLength) {
+                //Draw the message line to the terminal within the message border
+                gameTerminal.write (messageLine,
+                                    xPos,
+                                    yPos,
+                                    foreground,
+                                    background);
+                //Add onto the yPos for the next time it draws a line to the terminal
+                yPos++;
+                //Make sure to reset the message line
+                messageLine = "";
+                //Make sure to put drawMessage back to false
+                drawMessage = false;
+                
+                //Lastly check to make sure if there is a word to add that would have been skipped because of the line length
+                if (!wordToAdd.equals ("")) {
+                    //Add the word to the message line
+                    messageLine += wordToAdd;
+                    //And set it back to blank
+                    wordToAdd = "";
+                }
+            }
             //Find out if this is a start of a tag
-            char currChar = message.charAt (i);
-            if (currChar == '<') {
-                //Get what's in the tag
-                String tag = "";
-                int tagIndex;
-                for (tagIndex = i+1; tagIndex < message.length (); tagIndex++) {
-                    //Check to see if it's the end of a tag (>)
-                    if (message.charAt (tagIndex) == '>')
-                        break;
-                    else
-                        tag += message.charAt (tagIndex);
+            //char currChar = message.charAt (i);
+            if (messageArr[i].charAt (0) == '<') {
+//                //Get what's in the tag
+//                String tag = "";
+//                int tagIndex;
+//                for (tagIndex = i+1; tagIndex < message.length (); tagIndex++) {
+//                    //Check to see if it's the end of a tag (>)
+//                    if (message.charAt (tagIndex) == '>')
+//                        break;
+//                    else
+//                        tag += message.charAt (tagIndex);
+//                }
+//
+//                //Now get what the string is inside the tag
+//                String tagText = "";
+//                for (tagIndex = tagIndex+1; tagIndex < message.length (); tagIndex++) {
+//                    //Check to see if it's the start of the break tag
+//                    if (message.charAt (tagIndex) == '<') {
+//                        //Find the end of the break tag
+//                        for (int breakEnd = tagIndex+1; breakEnd < message.length (); breakEnd++) {
+//                            //Check to see if this current character is the end of the break
+//                            if (message.charAt (breakEnd) == '>') {
+//                                i = breakEnd + 1;
+//                                break;
+//                            }
+//                        }
+//                        break;
+//                    } else {
+//                        tagText += message.charAt (tagIndex);
+//                    }
+//                }
+//
+//                //Now figure out what the tag is and do what it's supposed to do
+//                if (tag == "b") {
+//                    //Make text black
+//                } else if (tag == "r") {
+//                    //Make text red
+//                } else if (tag == "g") {
+//                    //Make text green
+//                } else if (tag == "y") {
+//                    //Make text yellow
+//                } else if (tag == "bl") {
+//                    //Make text blue
+//                } else if (tag == "m") {
+//                    //Make text magenta
+//                } else if (tag == "c") {
+//                    //Make text cyan
+//                } else if (tag == "bb") {
+//                    //Make text bright black
+//                } else if (tag == "br") {
+//                    //Make text bright red
+//                } else if (tag == "bg") {
+//                    //Make text bright green
+//                } else if (tag == "by") {
+//                    //Make text bright yellow
+//                } else if (tag == "bbl") {
+//                    //Make text bright blue
+//                } else if (tag == "bm") {
+//                    //Make text bright magenta
+//                } else if (tag == "bc") {
+//                    //Make text bright cyan
+//                }
+            } else  {
+                //Add the current word into message line only if that doesn't exceed the max character length
+                if ((messageLine.length () + messageArr[i].length () + " ".length ()) < maxCharacterLength) {
+                    messageLine += messageArr[i] + " ";
+                } else {
+                    //Tell the program this word needs to be added to the new line
+                    wordToAdd = messageArr[i] + " ";
+                    //And now tell the program to draw the message line to the terminal
+                    drawMessage = true;
                 }
-                
-                //Now get what the string is inside the tag
-                String tagText = "";
-                for (tagIndex = tagIndex+1; tagIndex < message.length (); tagIndex++) {
-                    //Check to see if it's the start of the break tag
-                    if (message.charAt (tagIndex) == '<') {
-                        //Find the end of the break tag
-                        for (int breakEnd = tagIndex+1; breakEnd < message.length (); breakEnd++) {
-                            //Check to see if this current character is the end of the break
-                            if (message.charAt (breakEnd) == '>') {
-                                i = breakEnd + 1;
-                                break;
-                            }
-                        }
-                        break;
-                    } else {
-                        tagText += message.charAt (tagIndex);
-                    }
-                }
-                
-                //Now figure out what the tag is and do what it's supposed to do
-                if (tag == "b") {
-                    //Make text black
-                } else if (tag == "r") {
-                    //Make text red
-                } else if (tag == "g") {
-                    //Make text green
-                } else if (tag == "y") {
-                    //Make text yellow
-                } else if (tag == "bl") {
-                    //Make text blue
-                } else if (tag == "m") {
-                    //Make text magenta
-                } else if (tag == "c") {
-                    //Make text cyan
-                } else if (tag == "bb") {
-                    //Make text bright black
-                } else if (tag == "br") {
-                    //Make text bright red
-                } else if (tag == "bg") {
-                    //Make text bright green
-                } else if (tag == "by") {
-                    //Make text bright yellow
-                } else if (tag == "bbl") {
-                    //Make text bright blue
-                } else if (tag == "bm") {
-                    //Make text bright magenta
-                } else if (tag == "bc") {
-                    //Make text bright cyan
-                }
-            } else if (message.substring (i, i+1) == "\\n") {
-                //Write the message to the terminal
-                gameTerminal.write (messageToWrite, xPos, yPos, foreground, background);
-                //Add onto the y position for the next line
-                yPos += 1;
-                //Add on to the message index because \n
-                i++;
-            } else {
-                messageToWrite += message.charAt (i);
             }
         }
-        //Now draw the button
+        //Make sure to draw the last line of the message to the terminal
+        if (messageLine != "") {
+            gameTerminal.write (messageLine,
+                                xPos,
+                                yPos,
+                                foreground,
+                                background);
+        }
+        
+        //Get the position for the button
         Vector2D buttonPos = new Vector2D (messageBorder.x + (messageBorder.width / 2) - 4,
                                            (messageBorder.y + messageBorder.height) - 2);
-        //drawButtons ();
+        //Now draw the button
+        gameTerminal.write ("[", buttonPos.x, buttonPos.y, AsciiPanel.yellow);
+        gameTerminal.write (" Close ", buttonPos.x + 1, buttonPos.y);
+        gameTerminal.write ("]", buttonPos.x + " Close ".length () + 1, buttonPos.y, AsciiPanel.yellow);
     }
 }

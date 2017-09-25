@@ -1,17 +1,20 @@
-package com.CabinEscape;
+package com.menus;
 
+import com.CabinEscape.GameMain;
+import com.CabinEscape.GameRendering;
+import com.CabinEscape.GameSettings;
 import com.asciiPanel.AsciiPanel;
-import structs.Rect;
-import structs.Vector2D;
+import com.structs.Rect;
+import com.structs.Vector2D;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class LoadMenu {
+public class LoadSaveHandler {
     
     private GameSettings gameSettings;
-    
     private AsciiPanel gameTerminal;
+    private GameMain gameMain;
     
     private Vector2D loadTitlePos;
     private Vector2D gameTitlePos;
@@ -41,10 +44,11 @@ public class LoadMenu {
     private Vector2D extraMenuButtonPos;
     private ArrayList<String> extraMenuButtons = new ArrayList<String> ();
     
-    public LoadMenu (GameSettings gameSettings, AsciiPanel gameTerminal)
+    public LoadSaveHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {
         this.gameSettings = gameSettings;
         this.gameTerminal = gameTerminal;
+        this.gameMain = gameMain;
     
         loadTitlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Load"), 5);
         gameTitlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Game"), 13);
@@ -78,7 +82,7 @@ public class LoadMenu {
         extraMenuButtons.add ("No");
     }
     
-    public void drawGUI (GameMain gameMain)
+    public void drawGUI ()
     {
         //Draw the title of the screen
         GameRendering.drawMenuTitle (loadTitlePos.clone (),
@@ -141,7 +145,7 @@ public class LoadMenu {
                         animatedExtraMenuRect.height);
                 gameMain.setUpdateTerminalTimer (false);
                 turnOnButtonControl ();
-                drawGUI (gameMain);
+                drawGUI ();
             }
         }
         
@@ -211,7 +215,7 @@ public class LoadMenu {
                 false);
     }
     
-    private void setupAnimatedBorder (GameMain gameMain)
+    private void setupAnimatedBorder ()
     {
         if (!showExtraMenu) {
             animateExtraMenu = true;
@@ -289,7 +293,7 @@ public class LoadMenu {
         controlSaveButtons = saveButtonLastState;
     }
     
-    public void activateSelectedButton (GameMain gameMain)
+    public void activateSelectedButton ()
     {
         if (showExtraMenu) {
             //Now figure out which button is being selected
@@ -306,11 +310,11 @@ public class LoadMenu {
             }
             selectedExtraMenuButton = 1;
             extraMenu = 0;
-            setupAnimatedBorder (gameMain);
+            setupAnimatedBorder ();
         } else if (controlSaveButtons) {
             //Show the extra menu to load the save
             turnOffButtonControl ();
-            setupAnimatedBorder (gameMain);
+            setupAnimatedBorder ();
             extraMenu = 0;
         } else {
             if (funcButtonSelected == 0) {
@@ -321,7 +325,7 @@ public class LoadMenu {
             } else if (funcButtonSelected == 1) {
                 //Show the extra menu to delete the currently selected save file
                 turnOffButtonControl ();
-                setupAnimatedBorder (gameMain);
+                setupAnimatedBorder ();
                 extraMenu = 1;
             } else if (funcButtonSelected == 2) {
                 //Reset the variables for the selected buttons

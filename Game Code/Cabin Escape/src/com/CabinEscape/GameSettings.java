@@ -1,6 +1,6 @@
 package com.CabinEscape;
 
-import structs.Rect;
+import com.structs.Rect;
 
 public class GameSettings {
     

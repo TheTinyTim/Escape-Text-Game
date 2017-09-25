@@ -2,6 +2,7 @@ package com.CabinEscape;
 
 import com.asciiPanel.AsciiFont;
 import com.asciiPanel.AsciiPanel;
+import com.menus.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -48,11 +49,11 @@ public class GameMain extends JFrame implements KeyListener {
     private GameSettings gameSettings;
     
     //All the menus
-    private MainMenu mainMenu;
-    private SettingsMenu settingsMenu;
-    private PlayGameMenu gameMenu;
-    private SaveMenu saveMenu;
-    private LoadMenu loadMenu;
+    private MainMenuHandler mainMenuHandler;
+    private SettingsMenuHandler settingsMenuHandler;
+    private MainGameHandler gameMenu;
+    private SaveFileHandler saveFileHandler;
+    private LoadSaveHandler loadSaveHandler;
     public Menu currentMenu = Menu.MAIN;
     
     private String onScreenTyping = "";
@@ -105,21 +106,21 @@ public class GameMain extends JFrame implements KeyListener {
         GameRendering.setupTitleCharacters (file);
         
         //Instantiate all the menus
-        mainMenu = new MainMenu (gameSettings, gameTerminal);
-        settingsMenu = new SettingsMenu (gameSettings, gameTerminal);
-        gameMenu = new PlayGameMenu (gameSettings, gameTerminal);
-        saveMenu = new SaveMenu (gameSettings, gameTerminal);
-        loadMenu = new LoadMenu (gameSettings, gameTerminal);
+        mainMenuHandler = new MainMenuHandler (gameSettings, gameTerminal, this);
+        settingsMenuHandler = new SettingsMenuHandler (gameSettings, gameTerminal, this);
+        gameMenu = new MainGameHandler (gameSettings, gameTerminal, this);
+        saveFileHandler = new SaveFileHandler (gameSettings, gameTerminal, this);
+        loadSaveHandler = new LoadSaveHandler (gameSettings, gameTerminal, this);
         
         //Set up the timer to continually update if needed by the program
-        ActionListener al = new ActionListener () {
+        ActionListener actionListener = new ActionListener () {
             @Override
             public void actionPerformed (ActionEvent e)
             {
                 updateTerminal ();
             }
         };
-        timer = new Timer (30, al);
+        timer = new Timer (30, actionListener);
         
         updateTerminal ();
     
@@ -136,15 +137,15 @@ public class GameMain extends JFrame implements KeyListener {
         
         //Draw the menu
         if (currentMenu == Menu.MAIN)
-            mainMenu.drawGUI ();
+            mainMenuHandler.drawGUI ();
         else if (currentMenu == Menu.SETTINGS)
-            settingsMenu.drawGUI ();
+            settingsMenuHandler.drawGUI ();
         else if (currentMenu == Menu.GAME)
-            gameMenu.drawGUI (this);
+            gameMenu.drawGUI ();
         else if (currentMenu == Menu.SAVE)
-            saveMenu.drawGUI (this);
+            saveFileHandler.drawGUI ();
         else if (currentMenu == Menu.LOAD)
-            loadMenu.drawGUI (this);
+            loadSaveHandler.drawGUI ();
         
         //Now repaint the terminal so the changes will actually display
         gameTerminal.repaint ();
@@ -179,7 +180,11 @@ public class GameMain extends JFrame implements KeyListener {
             //Check to see if the user is trying to pause the menu or not
             if (event.getKeyChar () == KeyEvent.VK_ESCAPE) {
                 //Pause the game
-                gameMenu.changePauseMenu (this);
+                //gameMenu.changePauseMenu (this);
+                gameMenu.displayMessage (this);
+            //Check to see if the user is tyring to press the enter key
+            } else if (event.getKeyChar () == KeyEvent.VK_ENTER) {
+                gameMenu.enterPressed ();
             //Check to see if the user is trying to delete a character from what they typed.
             } else if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE) {
                 if (!gameMenu.userInput.equals (""))
@@ -220,41 +225,41 @@ public class GameMain extends JFrame implements KeyListener {
     public void activateButton ()
     {
         if (currentMenu == Menu.MAIN)
-            mainMenu.activateSelectedButton (this);
+            mainMenuHandler.activateSelectedButton ();
         else if (currentMenu == Menu.SETTINGS)
-            settingsMenu.activateSelectedButton (this);
+            settingsMenuHandler.activateSelectedButton ();
         else if (currentMenu == Menu.GAME)
-            gameMenu.activateSelectedButton (this);
+            gameMenu.activateSelectedButton ();
         else if (currentMenu == Menu.SAVE)
-            saveMenu.activateSelectedButton (this);
+            saveFileHandler.activateSelectedButton ();
         else if (currentMenu == Menu.LOAD)
-            loadMenu.activateSelectedButton (this);
+            loadSaveHandler.activateSelectedButton ();
     }
     
     //Function that will call the correct button change selection method based on the current menu open
     public void changeSelectedButton (int change)
     {
         if (currentMenu == Menu.MAIN)
-            mainMenu.changeSelectedButton (change);
+            mainMenuHandler.changeSelectedButton (change);
         else if (currentMenu == Menu.SETTINGS)
-            settingsMenu.changeSelectedButton (change);
+            settingsMenuHandler.changeSelectedButton (change);
         else if (currentMenu == Menu.GAME)
             gameMenu.changeSelectedButton (change);
         else if (currentMenu == Menu.SAVE)
-            saveMenu.changeSelectedButton (change);
+            saveFileHandler.changeSelectedButton (change);
         else if (currentMenu == Menu.LOAD)
-            loadMenu.changeSelectedButton (change);
+            loadSaveHandler.changeSelectedButton (change);
     }
     
     //Function that will call te correct button incrementation method based on the current menu open
     public void incrementSelectedButton (int change)
     {
         if (currentMenu == Menu.SETTINGS)
-            settingsMenu.changeSoundLevel (change);
+            settingsMenuHandler.changeSoundLevel (change);
         else if (currentMenu == Menu.SAVE)
-            saveMenu.changeButtonControl (change);
+            saveFileHandler.changeButtonControl (change);
         else if (currentMenu == Menu.LOAD)
-            loadMenu.changeButtonControl (change);
+            loadSaveHandler.changeButtonControl (change);
     }
     
     public void keyReleased (KeyEvent event)

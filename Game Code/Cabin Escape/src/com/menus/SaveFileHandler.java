@@ -1,53 +1,59 @@
-package com.CabinEscape;
+package com.menus;
 
+import com.CabinEscape.GameMain;
+import com.CabinEscape.GameRendering;
+import com.CabinEscape.GameSettings;
 import com.asciiPanel.AsciiPanel;
-import structs.Rect;
-import structs.Vector2D;
+import com.structs.Rect;
+import com.structs.Vector2D;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class SaveMenu {
+public class SaveFileHandler {
     
-    private GameSettings gameSettings;
-    
-    private AsciiPanel gameTerminal;
-    
-    private Vector2D saveTitlePos;
-    private Vector2D gameTitlePos;
-    
-    private Rect saveListBorder;
-    
-    private Vector2D saveListFuncButtonsPos;
-    private ArrayList<String> saveListFuncButtons = new ArrayList<String> ();
-    private boolean showFuncButtonSelected = false;
-    private int funcButtonSelected = 0;
-    
-    private Vector2D userSavesStartPos;
-    private ArrayList<String> userSaves = new ArrayList<String> ();
-    private boolean controlSaveButtons = true;
-    private int saveButtonSelected = 0;
-    
-    private boolean showExtraMenu = false;
-    
-    public boolean animateExtraMenu = false;
-    public boolean hideExtraMenu = false;
-    private Rect animatedExtraMenuRect;
-    
-    private boolean funcButtonLastState = false;
-    private boolean saveButtonLastState = false;
-    private int extraMenu = 0;
-    private int selectedExtraMenuButton = 1;
-    private Rect extraMenuRect;
-    private Vector2D extraMenuButtonPos;
-    private ArrayList<String> extraMenuButtons = new ArrayList<String> ();
+    //────────────────────Global Menu Variables─────────────────────────────────────────────────────────────────────────────────────┐
+    private GameSettings gameSettings;  //                                                                                          │
+    private AsciiPanel gameTerminal;    //                                                                                          │
+    private GameMain gameMain;          //                                                                                          │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    private Vector2D saveTitlePos;  //                                                                                              │
+    private Vector2D gameTitlePos;  //                                                                                              │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    private Rect saveListBorder;    //                                                                                              │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    private Vector2D saveListFuncButtonsPos;                                    //                                                  │
+    private ArrayList<String> saveListFuncButtons = new ArrayList<String> ();   //                                                  │
+    private boolean showFuncButtonSelected = false;                             //                                                  │
+    private int funcButtonSelected = 0;                                         //                                                  │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    private Vector2D userSavesStartPos;                             //                                                              │
+    private ArrayList<String> userSaves = new ArrayList<String> (); //                                                              │
+    private boolean controlSaveButtons = true;                      //                                                              │
+    private int saveButtonSelected = 0;                             //                                                              │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    private boolean showExtraMenu = false;  //                                                                                      │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    public boolean animateExtraMenu = false;    //                                                                                  │
+    public boolean hideExtraMenu = false;       //                                                                                  │
+    private Rect animatedExtraMenuRect;         //                                                                                  │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    private boolean funcButtonLastState = false;                            //                                                      │
+    private boolean saveButtonLastState = false;                            //                                                      │
+    private int extraMenu = 0;                                              //                                                      │
+    private int selectedExtraMenuButton = 1;                                //                                                      │
+    private Rect extraMenuRect;                                             //                                                      │
+    private Vector2D extraMenuButtonPos;                                    //                                                      │
+    private ArrayList<String> extraMenuButtons = new ArrayList<String> ();  //                                                      │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
     
     private int maxFileNameLength;
     
-    public SaveMenu (GameSettings gameSettings, AsciiPanel gameTerminal)
+    public SaveFileHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {
         this.gameSettings = gameSettings;
         this.gameTerminal = gameTerminal;
+        this.gameMain = gameMain;
         
         saveTitlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Save"), 5);
         gameTitlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Game"), 13);
@@ -84,7 +90,7 @@ public class SaveMenu {
         maxFileNameLength = saveListBorder.width - 6;
     }
     
-    public void drawGUI (GameMain gameMain)
+    public void drawGUI ()
     {
         //Draw the title of the screen
         GameRendering.drawMenuTitle (saveTitlePos.clone (),
@@ -147,7 +153,7 @@ public class SaveMenu {
                         animatedExtraMenuRect.height);
                 gameMain.setUpdateTerminalTimer (false);
                 turnOnButtonControl ();
-                drawGUI (gameMain);
+                drawGUI ();
             }
         }
         
@@ -216,7 +222,7 @@ public class SaveMenu {
                                    false);
     }
     
-    private void setupAnimatedBorder (GameMain gameMain)
+    private void setupAnimatedBorder ()
     {
         if (!showExtraMenu) {
             animateExtraMenu = true;
@@ -294,7 +300,7 @@ public class SaveMenu {
         controlSaveButtons = saveButtonLastState;
     }
     
-    public void activateSelectedButton (GameMain gameMain)
+    public void activateSelectedButton ()
     {
         //Check which buttons are being controlled
         if (showExtraMenu) {
@@ -312,11 +318,11 @@ public class SaveMenu {
             }
             selectedExtraMenuButton = 1;
             extraMenu = 0;
-            setupAnimatedBorder (gameMain);
+            setupAnimatedBorder ();
         } else if (controlSaveButtons) {
             //Show the extra menu to overwrite the save
             turnOffButtonControl ();
-            setupAnimatedBorder (gameMain);
+            setupAnimatedBorder ();
             extraMenu = 0;
         } else {
             if (funcButtonSelected == 0) {
@@ -324,7 +330,7 @@ public class SaveMenu {
             } else if (funcButtonSelected == 1) {
                 //Show the extra menu to delete the save
                 turnOffButtonControl ();
-                setupAnimatedBorder (gameMain);
+                setupAnimatedBorder ();
                 extraMenu = 1;
             } else if (funcButtonSelected == 2) {
                 //Reset the variables for the selected buttons

@@ -1,4 +1,4 @@
-package structs;
+package com.structs;
 
 public class Rect {
     

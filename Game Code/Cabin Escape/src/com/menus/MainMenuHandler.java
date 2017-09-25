@@ -1,15 +1,18 @@
-package com.CabinEscape;
+package com.menus;
 
+import com.CabinEscape.GameMain;
+import com.CabinEscape.GameRendering;
+import com.CabinEscape.GameSettings;
 import com.asciiPanel.AsciiPanel;
-import structs.Vector2D;
+import com.structs.Vector2D;
 
 import java.util.ArrayList;
 
-public class MainMenu {
+public class MainMenuHandler {
     
     private GameSettings gameSettings;
-    
     private AsciiPanel gameTerminal;
+    private GameMain gameMain;
     
     private ArrayList<String> buttons = new ArrayList<String> ();
     private int selectedButton = 0;
@@ -17,10 +20,11 @@ public class MainMenu {
     
     public boolean hasSaveGame = false;
     
-    public MainMenu (GameSettings gameSettings, AsciiPanel gameTerminal)
+    public MainMenuHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {
         this.gameSettings = gameSettings;
         this.gameTerminal = gameTerminal;
+        this.gameMain = gameMain;
         
         //TODO Check to see if the user has a save game and if so add the continue button
         if (hasSaveGame)
@@ -34,15 +38,7 @@ public class MainMenu {
     //Draw the menu
     public void drawGUI ()
     {
-//        GameRendering.drawBorder (new Rect (0, 0, 30, 30),
-//                                  gameTerminal,
-//                                  AsciiPanel.brightGreen,
-//                                  null,
-//                                  "Main Menu");
-        
         //Draw the title of the game on the screen
-    
-        //Now call the function to draw the title
         GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Cabin"), 5),
                                                    "Cabin",
                                                    gameTerminal,
@@ -77,7 +73,7 @@ public class MainMenu {
     }
     
     //Create the function that will handle the user pressing the enter button on the current selected button
-    public void activateSelectedButton (GameMain gameMain)
+    public void activateSelectedButton ()
     {
         //Find out which button is selected (0=Play 1=Settings 2=Quit)
         if (selectedButton == 0) {
