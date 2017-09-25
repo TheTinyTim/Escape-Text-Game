@@ -405,9 +405,98 @@ public class GameRendering {
         }
     }
     
-    //This will display a message within a border
-    public static void displayMessage (Rect messageBorder, String borderTitle, String message, GameMain gameMain)
+    //This will display a message within a border with a close button
+    public static void displayMessage (Rect messageBorder, String borderTitle, String message, GameMain gameMain, AsciiPanel gameTerminal, @Nullable Color foreground, @Nullable Color background)
     {
-    
+        //Draw the border
+        drawBorder (messageBorder,
+                    gameTerminal,
+                    foreground,
+                    background,
+                    borderTitle);
+        
+        //Now go through the text and find out if there's any rich text tags in it
+        String messageToWrite = "";
+        int xPos = 3;
+        int yPos = 3;
+        for (int i = 0; i < message.length (); i++) {
+            //Find out if this is a start of a tag
+            char currChar = message.charAt (i);
+            if (currChar == '<') {
+                //Get what's in the tag
+                String tag = "";
+                int tagIndex;
+                for (tagIndex = i+1; tagIndex < message.length (); tagIndex++) {
+                    //Check to see if it's the end of a tag (>)
+                    if (message.charAt (tagIndex) == '>')
+                        break;
+                    else
+                        tag += message.charAt (tagIndex);
+                }
+                
+                //Now get what the string is inside the tag
+                String tagText = "";
+                for (tagIndex = tagIndex+1; tagIndex < message.length (); tagIndex++) {
+                    //Check to see if it's the start of the break tag
+                    if (message.charAt (tagIndex) == '<') {
+                        //Find the end of the break tag
+                        for (int breakEnd = tagIndex+1; breakEnd < message.length (); breakEnd++) {
+                            //Check to see if this current character is the end of the break
+                            if (message.charAt (breakEnd) == '>') {
+                                i = breakEnd + 1;
+                                break;
+                            }
+                        }
+                        break;
+                    } else {
+                        tagText += message.charAt (tagIndex);
+                    }
+                }
+                
+                //Now figure out what the tag is and do what it's supposed to do
+                if (tag == "b") {
+                    //Make text black
+                } else if (tag == "r") {
+                    //Make text red
+                } else if (tag == "g") {
+                    //Make text green
+                } else if (tag == "y") {
+                    //Make text yellow
+                } else if (tag == "bl") {
+                    //Make text blue
+                } else if (tag == "m") {
+                    //Make text magenta
+                } else if (tag == "c") {
+                    //Make text cyan
+                } else if (tag == "bb") {
+                    //Make text bright black
+                } else if (tag == "br") {
+                    //Make text bright red
+                } else if (tag == "bg") {
+                    //Make text bright green
+                } else if (tag == "by") {
+                    //Make text bright yellow
+                } else if (tag == "bbl") {
+                    //Make text bright blue
+                } else if (tag == "bm") {
+                    //Make text bright magenta
+                } else if (tag == "bc") {
+                    //Make text bright cyan
+                }
+            } else if (message.substring (i, i+1) == "\\n") {
+                //Write the message to the terminal
+                gameTerminal.write (messageToWrite, xPos, yPos, foreground, background);
+                //Add onto the y position for the next line
+                yPos += 1;
+                //Add on to the message index because \n
+                i++;
+            } else {
+                messageToWrite += message.charAt (i);
+            }
+        }
+        //Now draw the button
+        Vector2D buttonPos = new Vector2D (messageBorder.x + (messageBorder.width / 2) - 4,
+                                           (messageBorder.y + messageBorder.height) - 2);
+        //drawButtons ();
     }
 }
