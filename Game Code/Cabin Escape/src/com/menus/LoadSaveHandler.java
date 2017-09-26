@@ -12,37 +12,46 @@ import java.util.ArrayList;
 
 public class LoadSaveHandler {
     
-    private GameSettings gameSettings;
-    private AsciiPanel gameTerminal;
-    private GameMain gameMain;
-    
-    private Vector2D loadTitlePos;
-    private Vector2D gameTitlePos;
-    
-    private Rect saveListBorder;
-    
-    private Vector2D saveListFuncButtonsPos;
-    private ArrayList<String> saveListFuncButtons = new ArrayList<String> ();
-    private boolean showFuncButtonSelected = false;
-    private int funcButtonSelected = 0;
-    
-    private Vector2D userSavesStartPos;
-    private ArrayList<String> userSaves = new ArrayList<String> ();
-    private boolean controlSaveButtons = true;
-    private int saveButtonSelected = 0;
-    
-    public boolean animateExtraMenu = false;
-    public boolean hideExtraMenu = false;
-    private Rect animatedExtraMenuRect;
-    
-    private boolean showExtraMenu = false;
-    private boolean funcButtonLastState = false;
-    private boolean saveButtonLastState = false;
-    private int extraMenu = 0;
-    private int selectedExtraMenuButton = 1;
-    private Rect extraMenuRect;
-    private Vector2D extraMenuButtonPos;
-    private ArrayList<String> extraMenuButtons = new ArrayList<String> ();
+    //────────────────────Global Menu Variables─────────────────────────────────────────────────────────────────────────────────────┐
+    //These are all the variables that are used within every menu                                                                   │
+    private GameSettings gameSettings;  //This stores all the settings for the game                                                 │
+    private AsciiPanel gameTerminal;    //This is the terminal that will display everything for the game                            │
+    private GameMain gameMain;          //This is the main class for the game that will handle updating the gui and what not        │
+    //────────────────────Title Positions───────────────────────────────────────────────────────────────────────────────────────────┤
+    //These set the positions of the menu titles                                                                                    │
+    private Vector2D loadTitlePos;  //The position of the "Save" title                                                              │
+    private Vector2D gameTitlePos;  //The position of the "Game" title                                                              │
+    //────────────────────Border for the save list──────────────────────────────────────────────────────────────────────────────────┤
+    //This is the border of the save list                                                                                           │
+    private Rect saveListBorder;    //                                                                                              │
+    //────────────────────Save list buttons─────────────────────────────────────────────────────────────────────────────────────────┤
+    //These are the variables for the function buttons on the side of the save border                                               │
+    private Vector2D saveListFuncButtonsPos;                                    //The starting position of the side buttons         │
+    private ArrayList<String> saveListFuncButtons = new ArrayList<String> ();   //The names of all the buttons                      │
+    private boolean showFuncButtonSelected = false;                             //If the side buttons selection should be shown     │
+    private int funcButtonSelected = 0;                                         //Which button is selected in the side buttons      │
+    //────────────────────Positions for the Users Saves─────────────────────────────────────────────────────────────────────────────┤
+    //These are all the variables for the ssaves that go in the save border                                                         │
+    private Vector2D userSavesStartPos;                             //The location where the saves start in the border              │
+    private ArrayList<String> userSaves = new ArrayList<String> (); //All the users saves on their computer                         │
+    private boolean controlSaveButtons = true;                      //If the user has control over the save buttons                 │
+    private int saveButtonSelected = 0;                             //Which button is currently selected                            │
+    //────────────────────Extra Menu Data───────────────────────────────────────────────────────────────────────────────────────────┤
+    //These are all the variables for the extra menu                                                                                │
+    private boolean showExtraMenu = false;      //If the extra menu should be shown or not                                          │
+    public boolean animateExtraMenu = false;    //If the extra menu should be animated open                                         │
+    public boolean hideExtraMenu = false;       //If the extra menu should be animated closed                                       │
+    private Rect animatedExtraMenuRect;         //The rect that the animated window uses                                            │
+    //────────────────────Extra Menu Buttons────────────────────────────────────────────────────────────────────────────────────────┴──────────────────────┐
+    //These are all the variables to change between the side buttons and save files                                                                        │
+    private boolean funcButtonLastState = false;                            //Stores if the side buttons were controlled before the extra menu was opened  │
+    private boolean saveButtonLastState = false;                            //Stores if the save buttons were controlled before the extra menu was opened  │
+    private int extraMenu = 0;                                              //Which extra menu is being opened                                             │
+    private int selectedExtraMenuButton = 1;                                //Which button is selected in the extra menu                                   │
+    private Rect extraMenuRect;                                             //The rect of the extra menu                                                   │
+    private Vector2D extraMenuButtonPos;                                    //The position where the extra menu buttons are                                │
+    private ArrayList<String> extraMenuButtons = new ArrayList<String> ();  //All the name of the buttons                                                  │
+    //─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
     
     public LoadSaveHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {

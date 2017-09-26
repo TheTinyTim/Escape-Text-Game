@@ -10,15 +10,18 @@ import java.util.ArrayList;
 
 public class MainMenuHandler {
     
-    private GameSettings gameSettings;
-    private AsciiPanel gameTerminal;
-    private GameMain gameMain;
-    
-    private ArrayList<String> buttons = new ArrayList<String> ();
-    private int selectedButton = 0;
-    private final int BUTTON_SPACE = 2;
-    
-    public boolean hasSaveGame = false;
+    //────────────────────Global Menu Variables─────────────────────────────────────────────────────────────────────────────────────┐
+    //These are all the variables that are used within every menu                                                                   │
+    private GameSettings gameSettings;  //This stores all the settings for the game                                                 │
+    private AsciiPanel gameTerminal;    //This is the terminal that will display everything for the game                            │
+    private GameMain gameMain;          //This is the main class for the game that will handle updating the gui and what not        │
+    //────────────────────Button Variables──────────────────────────────────────────────────────────────────────────────────────────┤
+    private ArrayList<String> buttons = new ArrayList<String> ();   //The button names                                              │
+    private int selectedButton = 0;                                 //The currently selected button                                 │
+    private final int BUTTON_SPACE = 2;                             //How much space there is between each buttons                  │
+    //────────────────────User Save Variables───────────────────────────────────────────────────────────────────────────────────────┤
+    public boolean hasSaveGame = false; //If the user has a save                                                                    │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
     
     public MainMenuHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {

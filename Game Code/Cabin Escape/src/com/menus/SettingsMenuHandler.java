@@ -10,21 +10,20 @@ import java.util.ArrayList;
 
 public class SettingsMenuHandler {
     
-    private GameSettings gameSettings;
-    private AsciiPanel gameTerminal;
-    private GameMain gameMain;
-    
-    //GUI settings
-    //Title
-    String title = "Settings";
-    Vector2D titlePos;
-    
-    //Buttons
-    private ArrayList<String> buttons = new ArrayList<String> ();
-    private Vector2D buttonStartPos;
-    private Vector2D soundPercentagePos;
-    private int selectedButton = 0;
-    private final int BUTTON_SPACE = 3;
+    //────────────────────Global Menu Variables─────────────────────────────────────────────────────────────────────────────────────┐
+    //These are all the variables that are used within every menu                                                                   │
+    private GameSettings gameSettings;  //This stores all the settings for the game                                                 │
+    private AsciiPanel gameTerminal;    //This is the terminal that will display everything for the game                            │
+    private GameMain gameMain;          //This is the main class for the game that will handle updating the gui and what not        │
+    //────────────────────Title Data────────────────────────────────────────────────────────────────────────────────────────────────┤
+    Vector2D titlePos;  //The position for the menus title                                                                          │
+    //────────────────────Button Data───────────────────────────────────────────────────────────────────────────────────────────────┤
+    private ArrayList<String> buttons = new ArrayList<String> ();   //The button names                                              │
+    private Vector2D buttonStartPos;                                //The starting position of the buttons                          │
+    private Vector2D soundPercentagePos;                            //The starting position of the percentages                      │
+    private int selectedButton = 0;                                 //The currently selected button                                 │
+    private final int BUTTON_SPACE = 3;                             //The amount of space between spaces                            │
+    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
     
     public SettingsMenuHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {
@@ -38,7 +37,7 @@ public class SettingsMenuHandler {
         buttons.add ("Back");
         
         //Set up all the positions of the GUI for this menu
-        titlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength (title), 5);
+        titlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Settings"), 5);
         buttonStartPos = new Vector2D (gameSettings.gameWindowWidth / 2, gameSettings.gameWindowHeight / 2);
         soundPercentagePos = buttonStartPos.clone ();
     }
@@ -47,7 +46,7 @@ public class SettingsMenuHandler {
     {
         //Draw the title of this menu
         GameRendering.drawMenuTitle (titlePos.clone (),
-                                     title,
+                                     "Settings",
                                      gameTerminal,
                                      AsciiPanel.white);
         

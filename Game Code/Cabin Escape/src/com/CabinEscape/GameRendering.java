@@ -14,17 +14,19 @@ import java.util.Scanner;
 
 public class GameRendering {
     
-    //Set up some chars to be used for rendering borders
-    private static final int PIPE_DOWN_RIGHT = 218;
-    private static final int PIPE_DOWN_LEFT = 191;
-    private static final int PIPE_UP_RIGHT = 192;
-    private static final int PIPE_UP_LEFT = 217;
-    private static final int PIPE_VERTICAL = 179;
-    private static final int PIPE_HORIZONTAL = 196;
-    
-    //Set up the dictionary that will hold all the letters/numbers/characters to display on the terminal for titles
-    public static Map<String, ArrayList<String>> terminalTitleLetters = new HashMap<String, ArrayList<String>> ();
-    private static final int LETTER_SPACE = 2;
+    //────────────────────Constants For Borders─────────────────────────────────────────────────────────────────────────────────────┐
+    //Set up some chars to be used for rendering borders                                                                            │
+    private static final int PIPE_DOWN_RIGHT = 218; //The char int for ┌                                                            │
+    private static final int PIPE_DOWN_LEFT = 191;  //The char int for ┐                                                            │
+    private static final int PIPE_UP_RIGHT = 192;   //The char int for └                                                            │
+    private static final int PIPE_UP_LEFT = 217;    //The char int for ┘                                                            │
+    private static final int PIPE_VERTICAL = 179;   //The char int for │                                                            │
+    private static final int PIPE_HORIZONTAL = 196; //The char int for ─                                                            │
+    //────────────────────Variables For Drawing A Title─────────────────────────────────────────────────────────────────────────────┴──────────────────────┐
+    //Set up the dictionary that will hold all the letters/numbers/characters to display on the terminal for titles                                        │
+    public static Map<String, ArrayList<String>> terminalTitleLetters = new HashMap<String, ArrayList<String>> ();//Dictionary for all the ASCII letters   │
+    private static final int LETTER_SPACE = 2;  //The space between letters in the title                                                                   │
+    //─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
     
     //This class will hold all the functions needed to help with rendering onto the ASCII Terminal
     
