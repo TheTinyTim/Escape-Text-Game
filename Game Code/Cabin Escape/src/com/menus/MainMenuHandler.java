@@ -38,30 +38,6 @@ public class MainMenuHandler {
         buttons.add ("Quit");
     }
     
-    //Draw the menu
-    public void drawGUI ()
-    {
-        //Draw the title of the game on the screen
-        GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Cabin"), 5),
-                                                   "Cabin",
-                                                   gameTerminal,
-                                                   AsciiPanel.white);
-        
-        GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Escape"), 13),
-                                                   "Escape",
-                                                   gameTerminal,
-                                                   AsciiPanel.red);
-        
-        GameRendering.drawButtons (new Vector2D ((gameSettings.gameWindowWidth / 2) - 6, (gameSettings.gameWindowHeight / 2) + 15),
-                                   buttons,
-                                   gameTerminal,
-                                   selectedButton,
-                                   BUTTON_SPACE,
-                                   AsciiPanel.yellow,
-                                   true,
-                                   true);
-    }
-    
     //Create the function that will handle changing the selected button
     public void changeSelectedButton (int change)
     {
@@ -87,7 +63,7 @@ public class MainMenuHandler {
                 //Tell the program the game is running
                 gameMain.gameIsGoing = true;
                 //Start the main game and display the GUI
-                gameMain.currentMenu = GameMain.Menu.GAME;
+                gameMain.changeMenu (GameMain.Menu.GAME);
             }
         } else if (selectedButton == 1) {
             //Check to see if the game currently has a save game if so the button will be different if it doesn't
@@ -95,16 +71,16 @@ public class MainMenuHandler {
                 //Tell the program the game is running
                 gameMain.gameIsGoing = true;
                 //Start the main game and display the GUI
-                gameMain.currentMenu = GameMain.Menu.GAME;
+                gameMain.changeMenu (GameMain.Menu.GAME);
             } else {
                 //Change the menu to the settings menu
-                gameMain.currentMenu = GameMain.Menu.SETTINGS;
+                gameMain.changeMenu (GameMain.Menu.SETTINGS);
             }
         } else if (selectedButton == 2) {
             //Check to see if the game currently has a save game if so the button will be different if it doesn't
             if (hasSaveGame) {
                 //Change the menu to the settings menu
-                gameMain.currentMenu = GameMain.Menu.SETTINGS;
+                gameMain.changeMenu (GameMain.Menu.SETTINGS);
             } else {
                 //Close the window and stop the application
                 gameMain.dispose ();
@@ -113,5 +89,45 @@ public class MainMenuHandler {
             //Close the window and stop the application
             gameMain.dispose ();
         }
+    }
+    
+    //--------------------------Everything GUI Related--------------------------\\
+    
+    //The main method that handles drawing all the needed things to the terminal
+    public void drawGUI ()
+    {
+        //Draw the title of the game on the screen
+        drawTitles ();
+        
+        //Now draw the buttons for the menu
+        drawButtons ();
+    }
+    
+    //------------Titles------------\\
+    //Draw the titles for this menu
+    private void drawTitles ()
+    {
+        GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Cabin"), 5),
+                "Cabin",
+                gameTerminal,
+                AsciiPanel.white);
+    
+        GameRendering.drawMenuTitle (new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Escape"), 13),
+                "Escape",
+                gameTerminal,
+                AsciiPanel.red);
+    }
+    
+    //------------Buttons------------\\
+    private void drawButtons ()
+    {
+        GameRendering.drawButtons (new Vector2D ((gameSettings.gameWindowWidth / 2) - 6, (gameSettings.gameWindowHeight / 2) + 15),
+                buttons,
+                gameTerminal,
+                selectedButton,
+                BUTTON_SPACE,
+                AsciiPanel.yellow,
+                true,
+                true);
     }
 }

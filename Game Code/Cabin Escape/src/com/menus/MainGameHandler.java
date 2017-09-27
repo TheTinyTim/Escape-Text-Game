@@ -10,7 +10,6 @@ import com.structs.Vector2D;
 import java.util.ArrayList;
 
 public class MainGameHandler {
-    //│ ┤ ┐ └ ┴ ┬ ├ ─ ┼ ┘ ┌
     
     //────────────────────Global Menu Variables─────────────────────────────────────────────────────────────────────────────────────┐
     //These are all the variables that are used within every menu                                                                   │
@@ -50,6 +49,7 @@ public class MainGameHandler {
     private Rect animatedMenuRect;  //The Rect that stores the information for the being animated at the time                       │
     //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
     
+    //The main constructor of this class that will set up all the needed variables for GUI
     public MainGameHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {
         this.gameSettings = gameSettings;
@@ -86,41 +86,15 @@ public class MainGameHandler {
         pauseMenuButtonPos = new Vector2D (pauseMenuBorder.x + ((pauseMenuBorder.width / 2) - 4), pauseMenuBorder.y + ((pauseMenuBorder.height / 2) - 4));
         
         messageBorder = new Rect (30, 5, gameSettings.gameWindowWidth - 60, gameSettings.gameWindowHeight - 10);
+        gameLog.add ("You picked up the key. It looks old and rusty with a image of a snake on it.");
+        gameLog.add ("That key doesn't work on this door!");
     }
     
-    //This is the main method that handles everything that needs to be draw to the terminal for this menu
-    public void drawGUI ()
+    //----------------------User Input Handling----------------------\\
+    //This will be called whenever the user presses the escape button (mainly used to show/hide the pause menu)
+    public void escapePressed ()
     {
-        //First draw all the borders for the game
-        drawGameSegments ();
-        
-        //Now draw the the message window if there is one being displayed
-        drawMessageWindow ();
-        
-        //Finally draw the pause menu if one is trying to open/closed or if it's already open
-        drawPauseMenu ();
-    }
-    
-    public void setupAnimatedBorder ()
-    {
-        //Find out if the pause menu is being opened or closed
-        if (!pauseMenuOpen) {
-            animatePauseMenu = true;
-            animatedMenuRect = new Rect (pauseMenuBorder.x + (pauseMenuBorder.width / 2),
-                                              pauseMenuBorder.y + (pauseMenuBorder.height / 2),
-                                              2,
-                                              2);
-        } else {
-            hidePauseMenu = true;
-            pauseMenuOpen = false;
-            animatedMenuRect = pauseMenuBorder.clone ();
-        }
-        gameMain.setUpdateTerminalTimer (true);
-    }
-    
-    public void changePauseMenu ()
-    {
-        setupAnimatedBorder ();
+        setupPauseMenuAnimation ();
         selectedMenuButton = 0;
     }
     
@@ -155,23 +129,23 @@ public class MainGameHandler {
             //Check to see what button is currently selected
             if (selectedMenuButton == 0) {
                 //Display the save game menu
-                gameMain.currentMenu = GameMain.Menu.SAVE;
+                gameMain.changeMenu (GameMain.Menu.SAVE);
             } else if (selectedMenuButton == 1) {
                 //Display the load game menu
-                gameMain.currentMenu = GameMain.Menu.LOAD;
+                gameMain.changeMenu (GameMain.Menu.LOAD);
             } else if (selectedMenuButton == 2) {
                 //Display the settings game menu
-                gameMain.currentMenu = GameMain.Menu.SETTINGS;
+                gameMain.changeMenu (GameMain.Menu.SETTINGS);
             } else if (selectedMenuButton == 3) {
                 //Close the pause menu
-                setupAnimatedBorder ();
+                setupPauseMenuAnimation ();
             } else if (selectedMenuButton == 4) {
                 //Close the pause menu
                 pauseMenuOpen = false;
                 //Tell the program the game won't be running any more
                 gameMain.gameIsGoing = false;
                 //Display the main menu
-                gameMain.currentMenu = GameMain.Menu.MAIN;
+                gameMain.changeMenu (GameMain.Menu.MAIN);
             }
         }
     }
@@ -185,24 +159,26 @@ public class MainGameHandler {
             hideMessageWindow = true;
             gameMain.setUpdateTerminalTimer (true);
             animatedMenuRect = messageBorder.clone ();
-        }
-    }
-    
-    public void displayMessage (GameMain gameMain)
-    {
-        if (!hideMessageWindow && !animateMessageWindow) {
-            if (!displayMessage) {
-                animateMessageWindow = true;
-                gameMain.setUpdateTerminalTimer (true);
-                animatedMenuRect = new Rect (messageBorder.x + (messageBorder.width / 2),
-                        messageBorder.y + (messageBorder.height / 2),
-                        2,
-                        2);
-            }
+        } else {
+            gameLog.add (userInput);
+            userInput = "";
         }
     }
     
     //-----------------------------Everything GUI related-----------------------------\\
+    
+    //This is the main method that handles everything that needs to be draw to the terminal for this menu
+    public void drawGUI ()
+    {
+        //First draw all the borders for the game
+        drawGameSegments ();
+        
+        //Now draw the the message window if there is one being displayed
+        drawMessageWindow ();
+        
+        //Finally draw the pause menu if one is trying to open/closed or if it's already open
+        drawPauseMenu ();
+    }
     
     //This will draw all the different segments in the game menu like the game log and inventory screens
     private void drawGameSegments ()
@@ -213,6 +189,9 @@ public class MainGameHandler {
                                   AsciiPanel.white,
                                   null,
                                   "Game Log");
+        
+        //Now draw the actual text that goes into the game log
+        drawGameLogText ();
     
         //---------------Draw everything needed for the players input---------------\\
         GameRendering.drawBorder (userInputBorder,
@@ -235,6 +214,72 @@ public class MainGameHandler {
                                   "Inventory");
     }
     
+    //This will draw all the log text
+    private void drawGameLogText ()
+    {
+        //Set up all the variables needed for the loop
+        int xPos = gameLogBorder.x + 3;
+        int yPos = gameLogBorder.y + 1;
+        int maxLineCharacterLength = gameLogBorder.width - 4;
+        String lineToAdd = "";
+        String wordToAdd = "";
+        boolean drawLine = false;
+        char bulletPoint = 254;
+        //Go through all the items in the game log array and write them to the terminal
+        for (int i = 0; i < gameLog.size (); i++)
+        {
+            //Get the current line that needs to be written to the terminal and split it by the spaces
+            String[] currLine = gameLog.get (i).split (" ");
+            //Draw the bullet point for this line to separate the liens
+            gameTerminal.write (bulletPoint, xPos, yPos);
+            
+            //Now loop through all the words in this line
+            for (int wordIndex = 0; wordIndex < currLine.length; wordIndex++) {
+                //First off check to see if the current line should be drawn based on it's length
+                if (drawLine || lineToAdd.length () > maxLineCharacterLength) {
+                    //First write the line to the terminal
+                    gameTerminal.write (lineToAdd, xPos + 2, yPos);
+                    //Now add on to the y position for the next line
+                    yPos++;
+                    //Make sure to reset the line to add
+                    lineToAdd = "";
+                    //Same for the draw line boolean
+                    drawLine = false;
+                    
+                    //Now check to see if there was a word that would have been skipped because a line being too long
+                    if (!wordToAdd.equals ("")) {
+                        //Add this word to the next line to be added
+                        lineToAdd += wordToAdd + " ";
+                        //And reset the word to add
+                        wordToAdd = "";
+                    }
+                }
+                
+                //Now find out if the next word in the array should be added to the current line or if the line
+                //would be larger then the max with this word added to it.
+                if ((lineToAdd.length () + currLine[wordIndex].length() + " ".length ()) < maxLineCharacterLength) {
+                    //Add this word to the line
+                    lineToAdd += currLine[wordIndex] + " ";
+                } else {
+                    //Make sure the current word will be added to the next line
+                    wordToAdd = currLine[wordIndex];
+                    //And tell the program to write this line
+                    drawLine = true;
+                }
+            }
+            
+            //Make sure to write the last line
+            gameTerminal.write (lineToAdd, xPos + 2, yPos);
+            //Now add on to the y position for the next line
+            yPos++;
+            //Make sure to reset the line to add
+            lineToAdd = "";
+            //Same for the draw line boolean
+            drawLine = false;
+        }
+    }
+    
+    //---------------Displaying Message Related Functions---------------\\
     //This will draw the message window if there is one that's being opened/closed/displayed
     private void drawMessageWindow ()
     {
@@ -268,6 +313,22 @@ public class MainGameHandler {
         }
     }
     
+    //This will set everything up needed to animate the message window
+    public void displayMessage ()
+    {
+        if (!hideMessageWindow && !animateMessageWindow) {
+            if (!displayMessage) {
+                animateMessageWindow = true;
+                gameMain.setUpdateTerminalTimer (true);
+                animatedMenuRect = new Rect (messageBorder.x + (messageBorder.width / 2),
+                        messageBorder.y + (messageBorder.height / 2),
+                        2,
+                        2);
+            }
+        }
+    }
+    
+    //---------------Displaying The Pause Menu Related---------------\\
     //This will draw the pause menu if it's being opened/closed/displayed
     private void drawPauseMenu ()
     {
@@ -316,5 +377,23 @@ public class MainGameHandler {
                     true,
                     true);
         }
+    }
+    
+    //This will handle setting all the needed variables to animate the pause menu open/closed
+    public void setupPauseMenuAnimation ()
+    {
+        //Find out if the pause menu is being opened or closed
+        if (!pauseMenuOpen) {
+            animatePauseMenu = true;
+            animatedMenuRect = new Rect (pauseMenuBorder.x + (pauseMenuBorder.width / 2),
+                    pauseMenuBorder.y + (pauseMenuBorder.height / 2),
+                    2,
+                    2);
+        } else {
+            hidePauseMenu = true;
+            pauseMenuOpen = false;
+            animatedMenuRect = pauseMenuBorder.clone ();
+        }
+        gameMain.setUpdateTerminalTimer (true);
     }
 }

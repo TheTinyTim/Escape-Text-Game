@@ -38,15 +38,13 @@ public class GameMain extends JFrame implements KeyListener {
     
     //Public variables
     public static GameMain gameRenderer;
+    public boolean gameIsGoing = false;     //Stores if the player is playing the actual game or not.
     
-    public boolean gameIsGoing = false;
-    public boolean keepUpdating = false;
-    
-    //Initialize the variable that will store the ASCII Terminal for later use and creation
-    private AsciiPanel gameTerminal;
+    //AsciiPanel Variables
+    private AsciiPanel gameTerminal;        //This is the actual terminal that will display everything for the game
     
     //Initialize the GameSettings class variable
-    private GameSettings gameSettings;
+    private GameSettings gameSettings;      //This stores all the important settings needed fro te game
     
     //All the menus
     private MainMenuHandler mainMenuHandler;
@@ -54,21 +52,22 @@ public class GameMain extends JFrame implements KeyListener {
     private MainGameHandler gameMenu;
     private SaveFileHandler saveFileHandler;
     private LoadSaveHandler loadSaveHandler;
-    public Menu currentMenu = Menu.MAIN;
+    private Menu currentMenu = Menu.MAIN;                //The current menu being displayed
     
-    private String onScreenTyping = "";
-    
-    Timer timer;
+    private Timer timer;
     
     public static void main(String[] args) {
         //Create a new GameMain class to start the game
-        gameRenderer = new GameMain ();
+        new GameMain ();
     }
 
     public GameMain ()
     {
         //Invoke the overridden superclass method for JFrame
         super ();
+    
+        //Store this class in a variable for later use
+        this.gameRenderer = this;
         
         //Create the class that holds all the settings for the game
         gameSettings = new GameSettings ();
@@ -93,13 +92,11 @@ public class GameMain extends JFrame implements KeyListener {
         //Now pack the JFrame to set the needed space for the windows created
         pack ();
         
-        startGame (this);
+        startGame ();
     }
     
-    public void startGame (GameMain gameRenderer)
+    public void startGame ()
     {
-        this.gameRenderer = gameRenderer;
-    
         //Set up the title letters in the game rendering class for later use.
         ClassLoader classLoader = getClass ().getClassLoader ();
         InputStream file = classLoader.getResourceAsStream ("title_letters.txt");
@@ -130,6 +127,8 @@ public class GameMain extends JFrame implements KeyListener {
         gameRenderer.setVisible (true);
     }
     
+    //-----------------------GUI Control-----------------------\\
+    //The main method that will draw what's needed on the terminal
     public void updateTerminal ()
     {
         //Make sure to clear the terminal so nothing will be left over
@@ -149,10 +148,6 @@ public class GameMain extends JFrame implements KeyListener {
         
         //Now repaint the terminal so the changes will actually display
         gameTerminal.repaint ();
-        
-        //Check to see if the terminal should be continually updated
-        if (keepUpdating)
-            updateTerminal ();
     }
     
     //This will start the timer to keep updating the terminal
@@ -164,6 +159,13 @@ public class GameMain extends JFrame implements KeyListener {
             timer.stop ();
     }
     
+    //This will handle switching menus in the game
+    public void changeMenu (Menu newMenu)
+    {
+        currentMenu = newMenu;
+    }
+    
+    //-----------------------User Input Control-----------------------\\
     //Set up all the methods needed to extend KeyListener
     public void keyPressed (KeyEvent event)
     {
@@ -180,8 +182,7 @@ public class GameMain extends JFrame implements KeyListener {
             //Check to see if the user is trying to pause the menu or not
             if (event.getKeyChar () == KeyEvent.VK_ESCAPE) {
                 //Pause the game
-                //gameMenu.changePauseMenu (this);
-                gameMenu.displayMessage (this);
+                gameMenu.escapePressed ();
             //Check to see if the user is tyring to press the enter key
             } else if (event.getKeyChar () == KeyEvent.VK_ENTER) {
                 gameMenu.enterPressed ();

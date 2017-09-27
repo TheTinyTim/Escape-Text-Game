@@ -134,9 +134,9 @@ public class SettingsMenuHandler {
         if (selectedButton == 3){
             //Display the correct menu based on if the user was playing the game when this menu was opened
             if (gameMain.gameIsGoing)
-                gameMain.currentMenu = GameMain.Menu.GAME;
+                gameMain.changeMenu (GameMain.Menu.GAME);
             else
-                gameMain.currentMenu = GameMain.Menu.MAIN;
+                gameMain.changeMenu (GameMain.Menu.MAIN);
         }
     }
 }

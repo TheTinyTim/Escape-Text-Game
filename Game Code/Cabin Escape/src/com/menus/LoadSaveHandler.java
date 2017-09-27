@@ -53,29 +53,35 @@ public class LoadSaveHandler {
     private ArrayList<String> extraMenuButtons = new ArrayList<String> ();  //All the name of the buttons                                                  │
     //─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
     
+    //This is the main constructor of the class that will set up all the needed variables for GUI
     public LoadSaveHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
     {
         this.gameSettings = gameSettings;
         this.gameTerminal = gameTerminal;
         this.gameMain = gameMain;
     
+        //-------Title Variables-------\\
         loadTitlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Load"), 5);
         gameTitlePos = new Vector2D (gameSettings.gameWindowWidth - GameRendering.titleLength ("Game"), 13);
     
+        //-------Save Area Variables-------\\
         saveListBorder = new Rect (30,
                 10,
                 30,
                 gameSettings.gameWindowHeight - 14);
     
+        //All the buttons that will go to the side of the save area
         saveListFuncButtons.add ("Load Save");
         saveListFuncButtons.add ("Delete");
         saveListFuncButtons.add ("Exit");
-    
+        
+        //This will not be needed when the game can check for saves
         userSaves.add ("Save 1");
         userSaves.add ("Save 2");
         userSaves.add ("Save 3");
         userSaves.add ("Save 4");
     
+        //The starting pos for the buttons
         saveListFuncButtonsPos = new Vector2D (saveListBorder.x - 11, saveListBorder.y + 2);
         userSavesStartPos = new Vector2D (saveListBorder.x + 3, saveListBorder.y + 1);
     
@@ -84,33 +90,148 @@ public class LoadSaveHandler {
                 (gameSettings.gameWindowHeight / 2) - 7,
                 30,
                 15);
-    
+        //The position of the extra menu buttons inside the border
         extraMenuButtonPos = new Vector2D (((extraMenuRect.width / 2) + extraMenuRect.x) - 9,
                 (extraMenuRect.height + extraMenuRect.y) - 3);
+        //The buttons that will go into the extra menu
         extraMenuButtons.add ("Yes");
         extraMenuButtons.add ("No");
     }
     
+    //----------------------User Input Handling----------------------\\
+    //Create the function that will handle changing the selected button
+    //(when the player presses the up/down arrow button)
+    public void changeSelectedButton (int change)
+    {
+        //Find out which buttons are being used by the player
+        if (controlSaveButtons) {
+            //Change the selection variable based on the change
+            saveButtonSelected += change;
+            
+            //Now check if the selection has gone over/under the max/min
+            if (saveButtonSelected < 0)
+                saveButtonSelected = userSaves.size () - 1;
+            else if (saveButtonSelected > userSaves.size () - 1)
+                saveButtonSelected = 0;
+        } else {
+            //Change the selection variable based on the change
+            funcButtonSelected += change;
+            
+            //Now check if the selection has gone over/under the max/min
+            if (funcButtonSelected < 0)
+                funcButtonSelected = saveListFuncButtons.size () - 1;
+            else if (funcButtonSelected > saveListFuncButtons.size () - 1)
+                funcButtonSelected = 0;
+        }
+    }
+    
+    //This will handle when the player is trying to move over to the side buttons or save files
+    //(when the player presses the left/right arrow button)
+    public void changeButtonControl (int change)
+    {
+        //Make sure only to allow control of this if the extra menu is open or not
+        if (!showExtraMenu) {
+            //Set both control bools opposite to what they are
+            controlSaveButtons = !controlSaveButtons;
+            showFuncButtonSelected = !showFuncButtonSelected;
+        } else {
+            //Change the selection variable based on the change
+            selectedExtraMenuButton += change;
+        
+            //Now check if the selection has gone over/under the max/min
+            if (selectedExtraMenuButton < 0)
+                selectedExtraMenuButton = extraMenuButtons.size () - 1;
+            else if (selectedExtraMenuButton > extraMenuButtons.size () - 1)
+                selectedExtraMenuButton = 0;
+        }
+    }
+    
+    //This will dictate what happens when the player presses enter trying to activate the button they've selected
+    public void activateSelectedButton ()
+    {
+        if (showExtraMenu) {
+            //Now figure out which button is being selected
+            if (selectedExtraMenuButton == 0) {
+                //Yes button pressed
+                //Figure out which menu is being shown
+                if (extraMenu == 0) {
+                    //TODO overwrite the save that is currently selected with a new save file
+                } else {
+                    //TODO delete the currently selected save file
+                }
+            } else {
+                //No button pressed
+            }
+            selectedExtraMenuButton = 1;
+            extraMenu = 0;
+            setupAnimatedBorder ();
+        } else if (controlSaveButtons) {
+            //Show the extra menu to load the save
+            turnOffButtonControl ();
+            setupAnimatedBorder ();
+            extraMenu = 0;
+        } else {
+            if (funcButtonSelected == 0) {
+                //Show the extra menu to load the save
+                turnOffButtonControl ();
+                showExtraMenu = true;
+                extraMenu = 0;
+            } else if (funcButtonSelected == 1) {
+                //Show the extra menu to delete the currently selected save file
+                turnOffButtonControl ();
+                setupAnimatedBorder ();
+                extraMenu = 1;
+            } else if (funcButtonSelected == 2) {
+                //Reset the variables for the selected buttons
+                funcButtonSelected = 0;
+                saveButtonSelected = 0;
+                //Reset which buttons are able to be controled
+                changeButtonControl (0);
+                //Go back to the game menu
+                gameMain.changeMenu (GameMain.Menu.GAME);
+            }
+        }
+    }
+    
+    //-----------------------------Everything GUI related-----------------------------\\
+    
+    //This handles what all needs to be displayed onto the screen
     public void drawGUI ()
     {
         //Draw the title of the screen
-        GameRendering.drawMenuTitle (loadTitlePos.clone (),
-                                    "Load",
-                                    gameTerminal,
-                                    AsciiPanel.white);
-        
-        GameRendering.drawMenuTitle (gameTitlePos.clone (),
-                                    "Game",
-                                    gameTerminal,
-                                    AsciiPanel.red);
+        drawTitle ();
         
         //Draw the border for the save files
+        drawSaveArea ();
+        
+        //Display the extra menu if it needs to displayed
+        displayExtraMenu ();
+    }
+    
+    //--------------------Titles--------------------\\
+    private void drawTitle ()
+    {
+        GameRendering.drawMenuTitle (loadTitlePos.clone (),
+                "Load",
+                gameTerminal,
+                AsciiPanel.white);
+    
+        GameRendering.drawMenuTitle (gameTitlePos.clone (),
+                "Game",
+                gameTerminal,
+                AsciiPanel.red);
+    }
+    
+    //--------------------Save Area--------------------\\
+    private void drawSaveArea ()
+    {
+        //First draw the border that the save files will go into
         GameRendering.drawBorder (saveListBorder,
                                   gameTerminal,
                                   null,
                                   null,
                                   "Saved Files");
-        
+    
         //Draw the side buttons
         GameRendering.drawButtons (saveListFuncButtonsPos.clone (),
                                    saveListFuncButtons,
@@ -120,7 +241,7 @@ public class LoadSaveHandler {
                                    AsciiPanel.yellow,
                                    showFuncButtonSelected,
                                    showFuncButtonSelected);
-        
+    
         GameRendering.drawButtons (userSavesStartPos.clone (),
                                    userSaves,
                                    gameTerminal,
@@ -133,7 +254,29 @@ public class LoadSaveHandler {
                                    Color.gray,
                                    true,
                                    true);
+    }
     
+    //This will turn off both controls for the button lists as well as save their last states
+    private void turnOffButtonControl ()
+    {
+        funcButtonLastState = showFuncButtonSelected;
+        saveButtonLastState = controlSaveButtons;
+        
+        showFuncButtonSelected = false;
+        controlSaveButtons = false;
+    }
+    
+    //This will turn the buttons back to the original state before being turned off
+    private void turnOnButtonControl ()
+    {
+        showFuncButtonSelected = funcButtonLastState;
+        controlSaveButtons = saveButtonLastState;
+    }
+    
+    //--------------------Extra Menu--------------------\\
+    //This will draw/animate the extra menu if needed
+    private void displayExtraMenu ()
+    {
         //Check to see if the extra menu should be open or not
         if (animateExtraMenu) {
             if (GameRendering.displayAnimatedBorder (extraMenuRect, animatedExtraMenuRect, gameTerminal, 1, "Warning!", true)) {
@@ -157,14 +300,14 @@ public class LoadSaveHandler {
                 drawGUI ();
             }
         }
-        
+    
         //Check to see if the extra menu should be open or not
         if (showExtraMenu)
             showExtraMenu ();
     }
     
     //This will show an extra menu based on which one should show
-    public void showExtraMenu ()
+    private void showExtraMenu ()
     {
         //Clear the area the extra menu will be
         gameTerminal.clear (' ',
@@ -224,127 +367,20 @@ public class LoadSaveHandler {
                 false);
     }
     
+    //This will set up everything needed to animate the extra menu
     private void setupAnimatedBorder ()
     {
         if (!showExtraMenu) {
             animateExtraMenu = true;
             animatedExtraMenuRect = new Rect (extraMenuRect.x + (extraMenuRect.width / 2),
-                                              extraMenuRect.y + (extraMenuRect.height / 2),
-                                              2,
-                                              2);
+                    extraMenuRect.y + (extraMenuRect.height / 2),
+                    2,
+                    2);
         } else {
             hideExtraMenu = true;
             showExtraMenu = false;
             animatedExtraMenuRect = extraMenuRect.clone ();
         }
         gameMain.setUpdateTerminalTimer (true);
-    }
-    
-    //Create the function that will handle changing the selected button
-    public void changeSelectedButton (int change)
-    {
-        //Find out which buttons are being used by the player
-        if (controlSaveButtons) {
-            //Change the selection variable based on the change
-            saveButtonSelected += change;
-            
-            //Now check if the selection has gone over/under the max/min
-            if (saveButtonSelected < 0)
-                saveButtonSelected = userSaves.size () - 1;
-            else if (saveButtonSelected > userSaves.size () - 1)
-                saveButtonSelected = 0;
-        } else {
-            //Change the selection variable based on the change
-            funcButtonSelected += change;
-            
-            //Now check if the selection has gone over/under the max/min
-            if (funcButtonSelected < 0)
-                funcButtonSelected = saveListFuncButtons.size () - 1;
-            else if (funcButtonSelected > saveListFuncButtons.size () - 1)
-                funcButtonSelected = 0;
-        }
-    }
-    
-    //This will handle when the player is trying to move over to the side buttons or save files
-    public void changeButtonControl (int change)
-    {
-        //Make sure only to allow control of this if the extra menu is open or not
-        if (!showExtraMenu) {
-            //Set both control bools opposite to what they are
-            controlSaveButtons = !controlSaveButtons;
-            showFuncButtonSelected = !showFuncButtonSelected;
-        } else {
-            //Change the selection variable based on the change
-            selectedExtraMenuButton += change;
-        
-            //Now check if the selection has gone over/under the max/min
-            if (selectedExtraMenuButton < 0)
-                selectedExtraMenuButton = extraMenuButtons.size () - 1;
-            else if (selectedExtraMenuButton > extraMenuButtons.size () - 1)
-                selectedExtraMenuButton = 0;
-        }
-    }
-    
-    //This will turn off both controls for the button lists as well as save their last states
-    public void turnOffButtonControl ()
-    {
-        funcButtonLastState = showFuncButtonSelected;
-        saveButtonLastState = controlSaveButtons;
-        
-        showFuncButtonSelected = false;
-        controlSaveButtons = false;
-    }
-    
-    //This will turn the buttons back to the original state before being turned off
-    public void turnOnButtonControl ()
-    {
-        showFuncButtonSelected = funcButtonLastState;
-        controlSaveButtons = saveButtonLastState;
-    }
-    
-    public void activateSelectedButton ()
-    {
-        if (showExtraMenu) {
-            //Now figure out which button is being selected
-            if (selectedExtraMenuButton == 0) {
-                //Yes button pressed
-                //Figure out which menu is being shown
-                if (extraMenu == 0) {
-                    //TODO overwrite the save that is currently selected with a new save file
-                } else {
-                    //TODO delete the currently selected save file
-                }
-            } else {
-                //No button pressed
-            }
-            selectedExtraMenuButton = 1;
-            extraMenu = 0;
-            setupAnimatedBorder ();
-        } else if (controlSaveButtons) {
-            //Show the extra menu to load the save
-            turnOffButtonControl ();
-            setupAnimatedBorder ();
-            extraMenu = 0;
-        } else {
-            if (funcButtonSelected == 0) {
-                //Show the extra menu to load the save
-                turnOffButtonControl ();
-                showExtraMenu = true;
-                extraMenu = 0;
-            } else if (funcButtonSelected == 1) {
-                //Show the extra menu to delete the currently selected save file
-                turnOffButtonControl ();
-                setupAnimatedBorder ();
-                extraMenu = 1;
-            } else if (funcButtonSelected == 2) {
-                //Reset the variables for the selected buttons
-                funcButtonSelected = 0;
-                saveButtonSelected = 0;
-                //Reset which buttons are able to be controled
-                changeButtonControl (0);
-                //Go back to the game menu
-                gameMain.currentMenu = GameMain.Menu.GAME;
-            }
-        }
     }
 }
