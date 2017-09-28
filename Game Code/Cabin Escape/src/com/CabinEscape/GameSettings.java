@@ -24,6 +24,7 @@ public class GameSettings {
     
     //Bools
     public boolean gameRunning = true;
+    public boolean isNewGame = false;
     
     
     public GameSettings ()

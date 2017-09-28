@@ -39,6 +39,7 @@ public class GameMain extends JFrame implements KeyListener {
     //Public variables
     public static GameMain gameRenderer;
     public boolean gameIsGoing = false;     //Stores if the player is playing the actual game or not.
+    public boolean reDrawGUI = false;       //Stores if the program should re draw the gui again after it drew it
     
     //AsciiPanel Variables
     private AsciiPanel gameTerminal;        //This is the actual terminal that will display everything for the game
@@ -148,6 +149,13 @@ public class GameMain extends JFrame implements KeyListener {
         
         //Now repaint the terminal so the changes will actually display
         gameTerminal.repaint ();
+        
+        //Check to see if the program should redraw the gui again or not
+        if (reDrawGUI) {
+            //Set reDrawGUI back to false to not loop again
+            reDrawGUI = false;
+            updateTerminal ();
+        }
     }
     
     //This will start the timer to keep updating the terminal
@@ -179,28 +187,7 @@ public class GameMain extends JFrame implements KeyListener {
         
         //Check to see if the user has typed anything while in the game menu
         if (currentMenu == Menu.GAME) {
-            //Check to see if the user is trying to pause the menu or not
-            if (event.getKeyChar () == KeyEvent.VK_ESCAPE) {
-                //Pause the game
-                gameMenu.escapePressed ();
-            //Check to see if the user is tyring to press the enter key
-            } else if (event.getKeyChar () == KeyEvent.VK_ENTER) {
-                gameMenu.enterPressed ();
-            //Check to see if the user is trying to delete a character from what they typed.
-            } else if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE) {
-                if (!gameMenu.userInput.equals (""))
-                    gameMenu.userInput = gameMenu.userInput.substring (0, gameMenu.userInput.length () - 1);
-            } else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER) {
-                //First make sure that the user string isn't longer then how many characters can fit into the border
-                if (gameMenu.checkUserInputLength ()) {
-                    //Now only write something to the user input if the user is either not holding the shift key or when they press the shift key while pressing another key
-                    if (event.isShiftDown () && event.getKeyCode () != 16) {
-                        gameMenu.userInput += event.getKeyChar ();
-                    } else if (!event.isShiftDown ()) {
-                        gameMenu.userInput += event.getKeyChar ();
-                    }
-                }
-            }
+            gameMenu.keyPressed (event);
         }
         
         if (event.getKeyCode () == 40)

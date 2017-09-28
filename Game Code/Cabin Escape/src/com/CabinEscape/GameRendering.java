@@ -408,15 +408,15 @@ public class GameRendering {
     }
     
     //This will display a message within a border with a close button
-    public static void displayMessage (Rect messageBorder, String borderTitle, String message, GameMain gameMain, AsciiPanel gameTerminal, @Nullable Color foreground, @Nullable Color background)
+    public static void displayMessage (Rect messageBorder, String borderTitle, String message, GameMain gameMain, AsciiPanel gameTerminal, boolean displayCloseButton, @Nullable Color foreground, @Nullable Color background)
     {
         //Draw the border
         drawBorder (messageBorder,
-                    gameTerminal,
-                    foreground,
-                    background,
-                    borderTitle);
-        
+                gameTerminal,
+                foreground,
+                background,
+                borderTitle);
+    
         //Take the string and split it up by the spaces
         String[] messageArr = message.split (" ");
         //Now go through the text and find out if there's any rich text tags in it
@@ -432,21 +432,27 @@ public class GameRendering {
             if (drawMessage || messageLine.length () > maxCharacterLength) {
                 //Draw the message line to the terminal within the message border
                 gameTerminal.write (messageLine,
-                                    xPos,
-                                    yPos,
-                                    foreground,
-                                    background);
+                        xPos,
+                        yPos,
+                        foreground,
+                        background);
                 //Add onto the yPos for the next time it draws a line to the terminal
                 yPos++;
                 //Make sure to reset the message line
                 messageLine = "";
                 //Make sure to put drawMessage back to false
                 drawMessage = false;
-                
+    
                 //Lastly check to make sure if there is a word to add that would have been skipped because of the line length
                 if (!wordToAdd.equals ("")) {
-                    //Add the word to the message line
-                    messageLine += wordToAdd;
+                    //Check to see if the word to add is an escape character for a new line
+                    if (wordToAdd.equals ("\\n") || wordToAdd.equals ("\\n ")) {
+                        //Skip the line
+                        yPos++;
+                    } else {
+                        //Add the word to the message line
+                        messageLine += wordToAdd;
+                    }
                     //And set it back to blank
                     wordToAdd = "";
                 }
@@ -514,10 +520,16 @@ public class GameRendering {
 //                } else if (tag == "bc") {
 //                    //Make text bright cyan
 //                }
-            } else  {
+            } else {
                 //Add the current word into message line only if that doesn't exceed the max character length
                 if ((messageLine.length () + messageArr[i].length () + " ".length ()) < maxCharacterLength) {
-                    messageLine += messageArr[i] + " ";
+                    //Check to make sure the current word isn't an escape character
+                    if (messageArr[i].equals ("\\n")) {
+                        drawMessage = true;
+                        wordToAdd = messageArr[i];
+                    } else {
+                        messageLine += messageArr[i] + " ";
+                    }
                 } else {
                     //Tell the program this word needs to be added to the new line
                     wordToAdd = messageArr[i] + " ";
@@ -529,18 +541,21 @@ public class GameRendering {
         //Make sure to draw the last line of the message to the terminal
         if (messageLine != "") {
             gameTerminal.write (messageLine,
-                                xPos,
-                                yPos,
-                                foreground,
-                                background);
+                    xPos,
+                    yPos,
+                    foreground,
+                    background);
         }
-        
-        //Get the position for the button
-        Vector2D buttonPos = new Vector2D (messageBorder.x + (messageBorder.width / 2) - 4,
-                                           (messageBorder.y + messageBorder.height) - 2);
-        //Now draw the button
-        gameTerminal.write ("[", buttonPos.x, buttonPos.y, AsciiPanel.yellow);
-        gameTerminal.write (" Close ", buttonPos.x + 1, buttonPos.y);
-        gameTerminal.write ("]", buttonPos.x + " Close ".length () + 1, buttonPos.y, AsciiPanel.yellow);
+    
+        //Now display the close button but only if the program wants it to
+        if (displayCloseButton) {
+                //Get the position for { the button
+                Vector2D buttonPos = new Vector2D (messageBorder.x + (messageBorder.width / 2) - 4,
+                        (messageBorder.y + messageBorder.height) - 2);
+            //Now draw the button
+            gameTerminal.write ("[", buttonPos.x, buttonPos.y, AsciiPanel.yellow);
+            gameTerminal.write (" Close ", buttonPos.x + 1, buttonPos.y);
+            gameTerminal.write ("]", buttonPos.x + " Close ".length () + 1, buttonPos.y, AsciiPanel.yellow);
+        }
     }
 }

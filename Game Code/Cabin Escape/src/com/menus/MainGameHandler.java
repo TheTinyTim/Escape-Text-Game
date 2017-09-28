@@ -4,50 +4,57 @@ import com.CabinEscape.GameMain;
 import com.CabinEscape.GameRendering;
 import com.CabinEscape.GameSettings;
 import com.asciiPanel.AsciiPanel;
+import com.rooms.PlayerCell;
 import com.structs.Rect;
 import com.structs.Vector2D;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class MainGameHandler {
     
-    //────────────────────Global Menu Variables─────────────────────────────────────────────────────────────────────────────────────┐
-    //These are all the variables that are used within every menu                                                                   │
-    private GameSettings gameSettings;  //This stores all the settings for the game                                                 │
-    private AsciiPanel gameTerminal;    //This is the terminal that will display everything for the game                            │
-    private GameMain gameMain;          //This is the main class for the game that will handle updating the gui and what not        │
-    //────────────────────GUI variables─────────────────────────────────────────────────────────────────────────────────────────────┤
-    //──────────────────────────────────Game Log────────────────────────────────────────────────────────────────────────────────────┤
-    //These variables are needed to draw the game game log segment                                                                  │
-    private Rect gameLogBorder;                                     //The border for the game log and its content                   │
-    private ArrayList<String> gameLog = new ArrayList<String> ();   //All the data that will be displayed on the game log           │
-    //──────────────────────────────────User Input──────────────────────────────────────────────────────────────────────────────────┤
-    //These variables are needed to draw the users input segment                                                                    │
-    private Rect userInputBorder;   //The border where the player will type everything                                              │
-    public String userInput = "";   //What the player has currently typed                                                           │
-    //──────────────────────────────────Inventory───────────────────────────────────────────────────────────────────────────────────┤
-    //These variables are needed to draw the inventory segment                                                                      │
-    private Rect inventoryBorder;   //The inventories border                                                                        │
-    //──────────────────────────────────Pause Menu──────────────────────────────────────────────────────────────────────────────────┤
-    //These variables are needed to draw and handle the pause menu                                                                  │
-    private ArrayList<String> pauseMenuButtons = new ArrayList<String> ();  //All the buttons that go on the pause menu             │
-    private Vector2D pauseMenuButtonPos;                                    //The location of the pause menu buttons                │
-    private int selectedMenuButton = 0;                                     //The button that's currently being hovered over        │
-    private Rect pauseMenuBorder;                                           //The pause menus border                                │
-    private boolean pauseMenuOpen = false;                                  //Stores if the pause menu is open or not               │
-    public boolean animatePauseMenu = false;                                //Stores if the pause menu needs to be animated open    │
-    public boolean hidePauseMenu = false;                                   //Stores if the pause menu needs to be animated closed  │
-    //──────────────────────────────────Message Window──────────────────────────────────────────────────────────────────────────────┤
-    //These variables are needed to draw and handle the message window                                                              │
-    private String message = "Hello there!";        //The message to be displayed in the menu                                       │
-    private boolean animateMessageWindow = false;   //Stores if the message window needs to be animated open or not                 │
-    private boolean hideMessageWindow = false;      //Stores if the message window needs to be animated closed or not               │
-    private boolean displayMessage = false;         //Stores if the message window needs to be shown or not                         │
-    private Rect messageBorder;                     //The messages border                                                           │
-    //──────────────────────────────────Animation Variables─────────────────────────────────────────────────────────────────────────┤
-    //These variables are needed to help with animating different windows                                                           │
-    private Rect animatedMenuRect;  //The Rect that stores the information for the being animated at the time                       │
-    //──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+    //These are all the variables that are used within every menu
+    private GameSettings gameSettings;  //This stores all the settings for the game
+    private AsciiPanel gameTerminal;    //This is the terminal that will display everything for the game
+    private GameMain gameMain;          //This is the main class for the game that will handle updating the gui and what not
+    
+    //Room variables
+    private String currentRoom = "Player Cell";
+    private PlayerCell playerCellRoom;
+    //------------------GUI variables------------------\\
+    //These variables are needed to draw the game game log segment
+    private Rect gameLogBorder;                                     //The border for the game log and its content
+    private ArrayList<String> gameLog = new ArrayList<String> ();   //All the data that will be displayed on the game log
+
+    //These variables are needed to draw the users input segment
+    private Rect userInputBorder;   //The border where the player will type everything
+    public String userInput = "";   //What the player has currently typed
+
+    //These variables are needed to draw the inventory segment
+    private Rect inventoryBorder;   //The inventories border
+
+    //These variables are needed to draw and handle the pause menu
+    private ArrayList<String> pauseMenuButtons = new ArrayList<String> ();  //All the buttons that go on the pause menu
+    private Vector2D pauseMenuButtonPos;                                    //The location of the pause menu buttons
+    private int selectedMenuButton = 0;                                     //The button that's currently being hovered over
+    private Rect pauseMenuBorder;                                           //The pause menus border
+    private boolean pauseMenuOpen = false;                                  //Stores if the pause menu is open or not
+    public boolean animatePauseMenu = false;                                //Stores if the pause menu needs to be animated open
+    public boolean hidePauseMenu = false;                                   //Stores if the pause menu needs to be animated closed
+   
+    //These variables are needed to draw and handle the message window
+    private String message = "Hello there!";                            //The message to be displayed in the menu
+    private ArrayList<String> messageParts = new ArrayList<String> ();  //The parts of a message if it needs the player to press space to continue it
+    private boolean animateMessageWindow = false;                       //Stores if the message window needs to be animated open or not
+    private boolean hideMessageWindow = false;                          //Stores if the message window needs to be animated closed or not
+    private boolean displayMessage = false;                             //Stores if the message window needs to be shown or not
+    private boolean showMessageCloseButton = true;
+    private int segmentedMessageSpot = 0;                               //What the current spot is for the segmented message
+    private Rect messageBorder;                                         //The messages border
+ 
+    //These variables are needed to help with animating different windows
+    private Rect animatedMenuRect;  //The Rect that stores the information for the being animated at the time
+ 
     
     //The main constructor of this class that will set up all the needed variables for GUI
     public MainGameHandler (GameSettings gameSettings, AsciiPanel gameTerminal, GameMain gameMain)
@@ -86,8 +93,9 @@ public class MainGameHandler {
         pauseMenuButtonPos = new Vector2D (pauseMenuBorder.x + ((pauseMenuBorder.width / 2) - 4), pauseMenuBorder.y + ((pauseMenuBorder.height / 2) - 4));
         
         messageBorder = new Rect (30, 5, gameSettings.gameWindowWidth - 60, gameSettings.gameWindowHeight - 10);
-        gameLog.add ("You picked up the key. It looks old and rusty with a image of a snake on it.");
-        gameLog.add ("That key doesn't work on this door!");
+        
+        //Now load all the rooms within the game
+        playerCellRoom = new PlayerCell (gameSettings, this);
     }
     
     //----------------------User Input Handling----------------------\\
@@ -154,14 +162,62 @@ public class MainGameHandler {
     {
         //Check to see if the message window is open
         if (displayMessage) {
-            //If it is open close it
-            displayMessage = false;
-            hideMessageWindow = true;
-            gameMain.setUpdateTerminalTimer (true);
-            animatedMenuRect = messageBorder.clone ();
+            //Only do this code if the messages close button is showing
+            if (showMessageCloseButton) {
+                //If it is open, close it
+                displayMessage = false;                     //Don't let the message window display anymore
+                hideMessageWindow = true;                   //Let the program know that it should animate the message window close
+                gameMain.setUpdateTerminalTimer (true);     //Have the program continually loop through the drawGUI method
+                animatedMenuRect = messageBorder.clone ();  //Clone the message borders rect so the animated window know where it starts
+    
+                //Check to see if the game is still set as a new game.
+                if (gameSettings.isNewGame) {
+                    //Make sure to tell the program it is no longer a new game so it doesn't show the new game message
+                    gameSettings.isNewGame = false;
+                }
+            }
         } else {
-            gameLog.add (userInput);
+            //Get the current room the player is in and what ever it is check to see if this input will do anything
+            if (currentRoom == "Player Cell")
+                playerCellRoom.checkUserInput (userInput);
+            
+            //Now remove everything from the users input
             userInput = "";
+        }
+    }
+    
+    public void keyPressed (KeyEvent event)
+    {
+        //Check to see if the user is trying to pause the menu or not
+        if (event.getKeyChar () == KeyEvent.VK_ESCAPE) {
+            //Pause the game
+            escapePressed ();
+            //Check to see if the user is tyring to press the enter key
+        } else if (event.getKeyChar () == KeyEvent.VK_ENTER) {
+            enterPressed ();
+            //Check to see if the user is trying to delete a character from what they typed.
+        } else if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE) {
+            if (!userInput.equals (""))
+                userInput = userInput.substring (0, userInput.length () - 1);
+        } else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER) {
+            //See if the message window is open to record when the user presses the space bar
+            if (displayMessage) {
+                if (event.getKeyChar () == KeyEvent.VK_SPACE) {
+                    if (messageParts.size () != 0 && messageParts.size () - 1 > segmentedMessageSpot) {
+                        segmentedMessageSpot++;
+                        //Tell the program to re draw the gui
+                        gameMain.reDrawGUI = true;
+                    }
+                }
+            //First make sure that the user string isn't longer then how many characters can fit into the border
+            } else if (checkUserInputLength ()) {
+                //Now only write something to the user input if the user is either not holding the shift key or when they press the shift key while pressing another key
+                if (event.isShiftDown () && event.getKeyCode () != 16) {
+                    userInput += event.getKeyChar ();
+                } else if (!event.isShiftDown ()) {
+                    userInput += event.getKeyChar ();
+                }
+            }
         }
     }
     
@@ -178,6 +234,42 @@ public class MainGameHandler {
         
         //Finally draw the pause menu if one is trying to open/closed or if it's already open
         drawPauseMenu ();
+        
+        //Check to see if this is a new game
+        if (gameSettings.isNewGame) {
+            //If it is display the beginning game message
+            if (!displayMessage && !animateMessageWindow) {
+                displayMessage ();
+                //Add the strings to message parts
+                messageParts.clear ();
+                messageParts.add ("You wake up to a loud crash. Then shortly after loud screaming, it's an argument. This is all too familiar.");
+                messageParts.add ("\\n You look around and see the same thing you've seen every time you've awoken for the past few weeks...or is it months?");
+                messageParts.add ("\\n You scratch your head in confusion. You're not really sure how long it's been since you were kidnapped. Everything has just been a blur ever since.");
+                messageParts.add ("\\n All of a sudden you snap back from your thoughts and you hear someone yelling, \"You know what!? I don't fucking care! I'll be back later.\" " +
+                        "then a loud slam of what you could only imagine being a door.");
+                messageParts.add ("\\n You start wondering what all of that was about. But quickly shrug it off and realise it hopefully means some time to yourself.");
+                messageParts.add ("\\n After all of that everything just goes quite. Even if only one of the two left it still gives you a sense of security. Which is something you crave even if it lasts for just a moment.");
+            }
+            
+            //Set the message to show based on the segmented message spot
+            message = "";
+            for (int i = 0; i < segmentedMessageSpot + 1; i++) {
+                if (i != 0)
+                    message += " ";
+                message += messageParts.get (i);
+            }
+            
+            //Find out if this is the last line to be shown
+            if (segmentedMessageSpot < messageParts.size () - 1) {
+                //If it isn't write onto the terminal to prompt the player to press space to continue the message
+                message += " \\n Press Space To Continue...";
+                //Don't allow the player to close the message window
+                showMessageCloseButton = false;
+            } else {
+                //Player has exhausted all the dialogue so let them close the message window
+                showMessageCloseButton = true;
+            }
+        }
     }
     
     //This will draw all the different segments in the game menu like the game log and inventory screens
@@ -279,6 +371,12 @@ public class MainGameHandler {
         }
     }
     
+    //This will allow the program to add text to the game log
+    public void addToGameLog (String gameLogOutput)
+    {
+        gameLog.add (gameLogOutput);
+    }
+    
     //---------------Displaying Message Related Functions---------------\\
     //This will draw the message window if there is one that's being opened/closed/displayed
     private void drawMessageWindow ()
@@ -309,7 +407,7 @@ public class MainGameHandler {
         //Now draw the message if it's opened
         if (displayMessage) {
             gameTerminal.clear (' ', messageBorder.x, messageBorder.y, messageBorder.width, messageBorder.height);
-            GameRendering.displayMessage (messageBorder, "Message", message, gameMain, gameTerminal, null, null);
+            GameRendering.displayMessage (messageBorder, "Message", message, gameMain, gameTerminal, showMessageCloseButton, null, null);
         }
     }
     
