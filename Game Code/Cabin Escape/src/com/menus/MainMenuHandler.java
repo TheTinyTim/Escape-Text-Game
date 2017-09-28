@@ -58,8 +58,12 @@ public class MainMenuHandler {
         if (selectedButton == 0) {
             //Check to see if the game currently has a save game if so the button will be different if it doesn't
             if (hasSaveGame) {
+                //----Continue Game----\\
                 //TODO Continue game
             } else {
+                //----New Game----\\
+                //Tell the game that this is a new game being played
+                gameSettings.isNewGame = true;
                 //Tell the program the game is running
                 gameMain.gameIsGoing = true;
                 //Start the main game and display the GUI
@@ -68,24 +72,31 @@ public class MainMenuHandler {
         } else if (selectedButton == 1) {
             //Check to see if the game currently has a save game if so the button will be different if it doesn't
             if (hasSaveGame) {
+                //----New Game----\\
+                //Tell the game that this is a new game being played
+                gameSettings.isNewGame = true;
                 //Tell the program the game is running
                 gameMain.gameIsGoing = true;
                 //Start the main game and display the GUI
                 gameMain.changeMenu (GameMain.Menu.GAME);
             } else {
+                //----Settings----\\
                 //Change the menu to the settings menu
                 gameMain.changeMenu (GameMain.Menu.SETTINGS);
             }
         } else if (selectedButton == 2) {
             //Check to see if the game currently has a save game if so the button will be different if it doesn't
             if (hasSaveGame) {
+                //----Settings----\\
                 //Change the menu to the settings menu
                 gameMain.changeMenu (GameMain.Menu.SETTINGS);
             } else {
+                //----Exit----\\
                 //Close the window and stop the application
                 gameMain.dispose ();
             }
         } else if (selectedButton == 3) {
+            //----Exit----\\
             //Close the window and stop the application
             gameMain.dispose ();
         }
