@@ -545,6 +545,13 @@ public class GameRendering {
                     yPos,
                     foreground,
                     background);
+            
+            yPos++;
+    
+            if (!wordToAdd.equals ("")) {
+                gameTerminal.write (wordToAdd, xPos, yPos, foreground, background);
+                wordToAdd = "";
+            }
         }
     
         //Now display the close button but only if the program wants it to

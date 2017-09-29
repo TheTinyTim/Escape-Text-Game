@@ -88,6 +88,9 @@ public class GameMain extends JFrame implements KeyListener {
         //Add the key listener
         addKeyListener (this);
         
+        //Allow the user to press the tab key
+        setFocusTraversalKeysEnabled (false);
+        
         //Add the game terminal to JFrame to later use
         add (gameTerminal);
         //Now pack the JFrame to set the needed space for the windows created
@@ -216,8 +219,6 @@ public class GameMain extends JFrame implements KeyListener {
             mainMenuHandler.activateSelectedButton ();
         else if (currentMenu == Menu.SETTINGS)
             settingsMenuHandler.activateSelectedButton ();
-        else if (currentMenu == Menu.GAME)
-            gameMenu.activateSelectedButton ();
         else if (currentMenu == Menu.SAVE)
             saveFileHandler.activateSelectedButton ();
         else if (currentMenu == Menu.LOAD)

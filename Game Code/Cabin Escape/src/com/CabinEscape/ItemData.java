@@ -29,6 +29,7 @@ public class ItemData {
     public String UID;                  //The items unique identifier
     public String itemName;             //The items in game name
     public String itemDescription;      //The items description that will be displayed if ever examined
+    public String messageText;          //The text to display on the screen if the player reads it
     public String itemToCombineWith;    //The UID of the item this can be combined with
     public String combinationOutput;    //The UID of the item the player gets by combining this item
     
@@ -46,6 +47,23 @@ public class ItemData {
         this.UID = UID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
+        this.messageText = "";
+        this.itemToCombineWith = "";
+        
+        this.itemType = itemType;
+        
+        this.playerHasItem = false;
+        this.playerHadItem = false;
+        this.canBeCombined = false;
+    }
+    
+    //An item that has a message to be displayed
+    public ItemData (String UID, String itemName, String itemDescription, String messageText, ItemType itemType)
+    {
+        this.UID = UID;
+        this.itemName = itemName;
+        this.itemDescription = itemDescription;
+        this.messageText = messageText;
         this.itemToCombineWith = "";
         
         this.itemType = itemType;
@@ -61,6 +79,7 @@ public class ItemData {
         this.UID = UID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
+        this.messageText = "";
         this.itemToCombineWith = "";
     
         this.itemType = itemType;
@@ -76,6 +95,7 @@ public class ItemData {
         this.UID = UID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
+        this.messageText = "";
         this.itemToCombineWith = "";
         
         this.itemType = itemType;
@@ -91,6 +111,7 @@ public class ItemData {
         this.UID = UID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
+        this.messageText = "";
         this.itemToCombineWith = itemToCombineWith;
         this.combinationOutput = combinationOutput;
         

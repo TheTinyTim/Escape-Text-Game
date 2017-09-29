@@ -1,8 +1,6 @@
 package com.menus;
 
-import com.CabinEscape.GameMain;
-import com.CabinEscape.GameRendering;
-import com.CabinEscape.GameSettings;
+import com.CabinEscape.*;
 import com.asciiPanel.AsciiPanel;
 import com.rooms.PlayerCell;
 import com.structs.Rect;
@@ -18,9 +16,13 @@ public class MainGameHandler {
     private AsciiPanel gameTerminal;    //This is the terminal that will display everything for the game
     private GameMain gameMain;          //This is the main class for the game that will handle updating the gui and what not
     
+    //The player data
+    public PlayerData playerData;
+    
     //Room variables
     private String currentRoom = "Player Cell";
     private PlayerCell playerCellRoom;
+    
     //------------------GUI variables------------------\\
     //These variables are needed to draw the game game log segment
     private Rect gameLogBorder;                                     //The border for the game log and its content
@@ -51,6 +53,12 @@ public class MainGameHandler {
     private boolean showMessageCloseButton = true;
     private int segmentedMessageSpot = 0;                               //What the current spot is for the segmented message
     private Rect messageBorder;                                         //The messages border
+    
+    //The variables needed for the journal entry menu
+    private boolean journalMenuOpen = false;    //Stores if the journal menu is open right now
+    private boolean showJournalMenu = false;    //Stores if the journal menu should be opened right now
+    private boolean hideJournalMenu = false;    //Stores if the journal menu should be closed right now
+    private int journalSelectedEntry = 0;       //Stores which journal the player is currently selecting
  
     //These variables are needed to help with animating different windows
     private Rect animatedMenuRect;  //The Rect that stores the information for the being animated at the time
@@ -94,6 +102,12 @@ public class MainGameHandler {
         
         messageBorder = new Rect (30, 5, gameSettings.gameWindowWidth - 60, gameSettings.gameWindowHeight - 10);
         
+        //Load the players data
+        playerData = new PlayerData ();
+        playerData.journalEntries.add (GameItems.playerNoteOne);
+        playerData.journalEntries.add (GameItems.playerNoteTwo);
+        playerData.journalEntries.add (GameItems.playerNoteThree);
+        
         //Now load all the rooms within the game
         playerCellRoom = new PlayerCell (gameSettings, this);
     }
@@ -120,19 +134,31 @@ public class MainGameHandler {
     //Create the function that will handle changing the selected button
     public void changeSelectedButton (int change)
     {
-        //Change the selection variable based on the change
-        selectedMenuButton += change;
-        
-        //Now check if the selection has gone over/under the max/min
-        if (selectedMenuButton < 0)
-            selectedMenuButton = pauseMenuButtons.size () - 1;
-        else if (selectedMenuButton > pauseMenuButtons.size () - 1)
-            selectedMenuButton = 0;
+        //Find out what menu that has buttons is current open
+        if (pauseMenuOpen) {
+            //Change the selection variable based on the change
+            selectedMenuButton += change;
+    
+            //Now check if the selection has gone over/under the max/min
+            if (selectedMenuButton < 0)
+                selectedMenuButton = pauseMenuButtons.size () - 1;
+            else if (selectedMenuButton > pauseMenuButtons.size () - 1)
+                selectedMenuButton = 0;
+        } else if (journalMenuOpen) {
+            //Change the selection variable based on the change
+            journalSelectedEntry += change;
+            
+            //Now check if the selection has gone over/under the max/min
+            if (journalSelectedEntry < 0)
+                journalSelectedEntry = playerData.journalEntries.size ();
+            else if (journalSelectedEntry > playerData.journalEntries.size ())
+                journalSelectedEntry = 0;
+        }
     }
     
-    public void activateSelectedButton ()
+    public void enterPressed ()
     {
-        //Only open these if the pause menu is open
+        //Check to see what menu is currently open
         if (pauseMenuOpen) {
             //Check to see what button is currently selected
             if (selectedMenuButton == 0) {
@@ -155,28 +181,37 @@ public class MainGameHandler {
                 //Display the main menu
                 gameMain.changeMenu (GameMain.Menu.MAIN);
             }
-        }
-    }
-    
-    public void enterPressed ()
-    {
-        //Check to see if the message window is open
-        if (displayMessage) {
-            //Only do this code if the messages close button is showing
-            if (showMessageCloseButton) {
-                //If it is open, close it
-                displayMessage = false;                     //Don't let the message window display anymore
-                hideMessageWindow = true;                   //Let the program know that it should animate the message window close
-                gameMain.setUpdateTerminalTimer (true);     //Have the program continually loop through the drawGUI method
-                animatedMenuRect = messageBorder.clone ();  //Clone the message borders rect so the animated window know where it starts
-    
-                //Check to see if the game is still set as a new game.
-                if (gameSettings.isNewGame) {
-                    //Make sure to tell the program it is no longer a new game so it doesn't show the new game message
-                    gameSettings.isNewGame = false;
+        } else if (displayMessage) {
+            //Check to see if the message being displayed is a journal entry
+            if (journalMenuOpen) {
+                //If it is don't animate the window close so the journal menu will just display after closing
+                displayMessage = false;
+            } else {
+                //Only do this code if the messages close button is showing
+                if (showMessageCloseButton) {
+                    //If it is open, close it
+                    displayMessage = false;                     //Don't let the message window display anymore
+                    hideMessageWindow = true;                   //Let the program know that it should animate the message window close
+                    gameMain.setUpdateTerminalTimer (true);     //Have the program continually loop through the drawGUI method
+                    animatedMenuRect = messageBorder.clone ();  //Clone the message borders rect so the animated window know where it starts
+        
+                    //Check to see if the game is still set as a new game.
+                    if (gameSettings.isNewGame) {
+                        //Make sure to tell the program it is no longer a new game so it doesn't show the new game message
+                        gameSettings.isNewGame = false;
+                    }
                 }
             }
-        } else {
+        } else if (journalMenuOpen) {
+            //Make sure the user isn't trying to close the menu
+            if (journalSelectedEntry == playerData.journalEntries.size ()) {
+                showHideJournalWindow ();
+            } else {
+                //Find out what journal is being selected and display a message border with the message in it
+                message = playerData.journalEntries.get (journalSelectedEntry).messageText;
+                displayMessage = true;
+            }
+        } else if (!pauseMenuOpen && !animatePauseMenu && !hidePauseMenu && !animateMessageWindow && !hideMessageWindow && !showJournalMenu && !hideJournalMenu) {
             //Get the current room the player is in and what ever it is check to see if this input will do anything
             if (currentRoom == "Player Cell")
                 playerCellRoom.checkUserInput (userInput);
@@ -192,7 +227,11 @@ public class MainGameHandler {
         if (event.getKeyChar () == KeyEvent.VK_ESCAPE) {
             //Pause the game
             escapePressed ();
-            //Check to see if the user is tyring to press the enter key
+        //Check to see if the user is trying to open/close the journal menu
+        } else if (event.getKeyChar () == KeyEvent.VK_TAB) {
+            //Open or close the journal window
+            showHideJournalWindow ();
+        //Check to see if the user is tyring to press the enter key
         } else if (event.getKeyChar () == KeyEvent.VK_ENTER) {
             enterPressed ();
             //Check to see if the user is trying to delete a character from what they typed.
@@ -228,6 +267,9 @@ public class MainGameHandler {
     {
         //First draw all the borders for the game
         drawGameSegments ();
+        
+        //Draw the journal window if the player is trying to open it
+        drawJournalWindow ();
         
         //Now draw the the message window if there is one being displayed
         drawMessageWindow ();
@@ -312,7 +354,7 @@ public class MainGameHandler {
         //Set up all the variables needed for the loop
         int xPos = gameLogBorder.x + 3;
         int yPos = gameLogBorder.y + 1;
-        int maxLineCharacterLength = gameLogBorder.width - 4;
+        int maxLineCharacterLength = gameLogBorder.width - 6;
         String lineToAdd = "";
         String wordToAdd = "";
         boolean drawLine = false;
@@ -364,6 +406,14 @@ public class MainGameHandler {
             gameTerminal.write (lineToAdd, xPos + 2, yPos);
             //Now add on to the y position for the next line
             yPos++;
+            
+            //Check to see if there is a word to add and if so add it to the line
+            if (!wordToAdd.equals ("")) {
+                gameTerminal.write (wordToAdd, xPos + 2, yPos);
+                wordToAdd = "";
+                yPos++;
+            }
+            
             //Make sure to reset the line to add
             lineToAdd = "";
             //Same for the draw line boolean
@@ -378,6 +428,81 @@ public class MainGameHandler {
     }
     
     //---------------Displaying Message Related Functions---------------\\
+    //This will draw the journal entry window if the user is trying to open/view it
+    private void drawJournalWindow ()
+    {
+        //Check to see if the window should animate open
+        if (showJournalMenu) {
+            if (GameRendering.displayAnimatedBorder (messageBorder, animatedMenuRect, gameTerminal, 2, "Journal Entries", false)) {
+                showJournalMenu = false;
+                journalMenuOpen = true;
+                gameMain.setUpdateTerminalTimer (false);
+            }
+        }
+        
+        if (hideJournalMenu) {
+            if (GameRendering.hideAnimatedBorder (messageBorder, animatedMenuRect, gameTerminal, 2, "Journal Entries", false)) {
+                hideJournalMenu = false;
+                gameTerminal.clear (' ',
+                        animatedMenuRect.x,
+                        animatedMenuRect.y,
+                        animatedMenuRect.width,
+                        animatedMenuRect.height);
+                drawGUI ();
+            }
+        }
+        
+        if (journalMenuOpen) {
+            //First clear the area the journal will be
+            gameTerminal.clear (' ', messageBorder.x, messageBorder.y, messageBorder.width, messageBorder.height);
+            
+            //Now create a list for all the buttons based on the players journal entries in PlayerData
+            ArrayList<String> journalButtons = new ArrayList<String> ();
+            for (int journal = 0; journal < playerData.journalEntries.size (); journal++) {
+                journalButtons.add (playerData.journalEntries.get (journal).itemName);
+            }
+            //Add the close button
+            journalButtons.add ("Close");
+            
+            //Draw the border the buttons will be stored in
+            GameRendering.drawBorder (messageBorder, gameTerminal, null, null, "Journal Entries");
+            //Now draw the buttons inside the border
+            GameRendering.drawButtons (new Vector2D (messageBorder.x + 4, messageBorder.y + 2),
+                    journalButtons,
+                    gameTerminal,
+                    journalSelectedEntry,
+                    1,
+                    AsciiPanel.yellow);
+        }
+    }
+    
+    //The method that will be called when the user is trying to open or close the journal window
+    private void showHideJournalWindow ()
+    {
+        //Find out if the journal menu is currently open or not
+        if (!journalMenuOpen) {
+            //The journal menu is closed so set it up to show it but only if it isn't already being opened or closed
+            if (!showJournalMenu && !hideJournalMenu) {
+                showJournalMenu = true;     //Tell the program to animate the journal window open
+                gameMain.setUpdateTerminalTimer (true);     //Have the program continually update the GUI
+                //Get the very middle of the journals rect for the animated rect
+                animatedMenuRect = new Rect (messageBorder.x + (messageBorder.width / 2),
+                        messageBorder.y + (messageBorder.height / 2),
+                        2,
+                        2);
+            }
+        } else {
+            //The journal menu is already opened and the player is trying to close it but only do this
+            //if it isn't closing or opening already
+            if (!showJournalMenu && !hideJournalMenu) {
+                journalMenuOpen = false;
+                hideJournalMenu = true;     //Tell the program to animate the window closed
+                gameMain.setUpdateTerminalTimer (true);     //Have the program continually update the GUI
+                animatedMenuRect = messageBorder.clone ();  //Set the animated rect to the journals rect
+            }
+        }
+    }
+    
     //This will draw the message window if there is one that's being opened/closed/displayed
     private void drawMessageWindow ()
     {

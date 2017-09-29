@@ -1,5 +1,7 @@
 package com.CabinEscape;
 
+import java.util.ArrayList;
+
 public class PlayerData {
     /*
      * This class will hold all the players data regarding:
@@ -11,4 +13,6 @@ public class PlayerData {
      *      How to parse xml: https://stackoverflow.com/questions/5059224/which-is-the-best-library-for-xml-parsing-in-java
      *      How to encrypt/decrypt: https://stackoverflow.com/questions/8395877/encrypting-and-decrypting-xml
      */
+    
+    public ArrayList<ItemData> journalEntries = new ArrayList<ItemData> ();
 }
