@@ -1,5 +1,6 @@
 package com.rooms;
 
+import com.CabinEscape.GameItems;
 import com.CabinEscape.GameSettings;
 import com.CabinEscape.ItemData;
 import com.menus.MainGameHandler;
@@ -53,7 +54,7 @@ public class PlayerCell {
         //Now set up all the variables for this room
         roomName = "Dark Cell";
         roomDescription = "The room you've called home for what seems like an eternity now. A small, bug infested cell with a tiny mattress in the corner. " +
-                          "There's also scattered pieces of paper and other junk that you've accumulated over the days...or weeks. It's hard to tell at this point.";
+                          "There's also scattered pieces of paper and other junk that you've accumulated over the weeks...or months. It's hard to tell at this point.";
         
         northSideDescription = "You see a metal gate with the door that's keeping you captive in this hell. On the floor you see a bunch of junk that hasn't been cleaned in ages.";
         
@@ -128,8 +129,7 @@ public class PlayerCell {
         if (userInput.contains ("room") || userInput.contains ("surroundings") || userInput.contains ("location")) {
             
             //See what te user is trying to do exactly
-            if ((userInput.contains ("examine") || userInput.contains ("look") || userInput.contains ("review")|| userInput.contains ("inspect")
-                    || userInput.contains ("gander") || userInput.contains ("observe") || userInput.contains ("survey") || userInput.contains ("see"))) {
+            if (checkLookSynonyms (userInput)) {
                 
                 //The user is trying to get the description of the room
                 mainGame.addToGameLog (roomDescription);
@@ -213,8 +213,7 @@ public class PlayerCell {
         } else if (currentDirection == 0) {
         
             //Try to figure out what the player is trying to do
-            if (userInput.contains ("examine") || userInput.contains ("look") || userInput.contains ("review") || userInput.contains ("inspect")
-                    || userInput.contains ("gander") || userInput.contains ("observe") || userInput.contains ("survey") || userInput.contains ("see") || userInput.contains ("area")) {
+            if (checkLookSynonyms (userInput) || userInput.contains ("area")) {
                 
                 //The user is trying to get the description of the side of the room they're looking at
                 mainGame.addToGameLog (northSideDescription);
@@ -227,16 +226,48 @@ public class PlayerCell {
             }
         
         } else if (currentDirection == 1) {
-    
+
             //Try to figure out what the player is trying to do
-            if (userInput.contains ("examine") || userInput.contains ("look") || userInput.contains ("looking") || userInput.contains ("review") || userInput.contains ("inspect")
-                    || userInput.contains ("gander") || userInput.contains ("observe") || userInput.contains ("survey") || userInput.contains ("see") || userInput.contains ("area")) {
-        
+            if (userInput.contains("mattress") || userInput.contains("bed")) {
+                //The user is trying to do something with the mattress so find out what they're trying to do
+                if (checkLookSynonyms(userInput)) {
+                    //The user is trying to examine the mattress now see if they're trying to look under it
+                    if (userInput.contains("under") || userInput.contains("beneath") || userInput.contains("bottom")) {
+
+                        //Write to the gamelog that the player looks under the mattress and give them the specific items
+                        //that are hidden under it
+                        mainGame.addToGameLog("You look under your mattress and a slight feeling of peace greats you " +
+                                "as you see all the different trinkets and papers you've accumulated since you've been here.");
+                        mainGame.addToGameLog("Entries added to your journal!");
+
+                        //Now add the messages to the player journals
+                        mainGame.playerData.journalEntries.add(GameItems.playerNoteOne);
+                        mainGame.playerData.journalEntries.add(GameItems.playerNoteTwo);
+                        mainGame.playerData.journalEntries.add(GameItems.playerNoteThree);
+                    } else {
+
+                        //Write to the gamelog the description of the mattress
+                        mainGame.addToGameLog("It's the disgusting bug and stain ridden mattress you've been forced to sleep on " +
+                                "since you were kidnapped. But even then you still find yourself coming back to it for safety or when you need " +
+                                "to hide anything.");
+                    }
+                }
+
+            } else if (userInput.contains ("wall")) {
+                //The user is trying to do something with the wall on this side
+                if (checkLookSynonyms (userInput)) {
+                    //The user is trying to inspect the wall so write to the gamelog the description of the wall
+                    mainGame.addToGameLog ("On the wall you see a bunch of different drawings of random people, " +
+                            "objects, areas, and other things that you draw when you get bored. You also see in its own area a " +
+                            "large number of tallies that you've been scratching out counting the number of days you've been " +
+                            "here. After counting them all you total a number of 42 tallies.");
+                }
+
+            } else if (checkLookSynonyms (userInput) || userInput.contains ("area")) {
                 //The user is trying to get the description of the side of the room they're looking at
                 mainGame.addToGameLog (eastSideDescription);
         
             } else {
-    
                 //Tell the player they can't do that
                 mainGame.addToGameLog ("I don't know how to do that.");
     
@@ -245,8 +276,7 @@ public class PlayerCell {
         } else if (currentDirection == 2) {
     
             //Try to figure out what the player is trying to do
-            if (userInput.contains ("examine") || userInput.contains ("look") || userInput.contains ("looking") || userInput.contains ("review") || userInput.contains ("inspect")
-                    || userInput.contains ("gander") || userInput.contains ("observe") || userInput.contains ("survey") || userInput.contains ("see") || userInput.contains ("area")) {
+            if (checkLookSynonyms (userInput) || userInput.contains ("area")) {
         
                 //The user is trying to get the description of the side of the room they're looking at
                 mainGame.addToGameLog (southSideDescription);
@@ -261,8 +291,7 @@ public class PlayerCell {
         } else if (currentDirection == 3) {
     
             //Try to figure out what the player is trying to do
-            if (userInput.contains ("examine") || userInput.contains ("look") || userInput.contains ("looking") || userInput.contains ("review") || userInput.contains ("inspect")
-                    || userInput.contains ("gander") || userInput.contains ("observe") || userInput.contains ("survey") || userInput.contains ("see") || userInput.contains ("area")) {
+            if (checkLookSynonyms (userInput) || userInput.contains ("area")) {
         
                 //The user is trying to get the description of the side of the room they're looking at
                 mainGame.addToGameLog (westSideDescription);
@@ -274,6 +303,18 @@ public class PlayerCell {
     
             }
         
+        }
+    }
+
+    //This function will check if the users input has anything to do with looking at something
+    private boolean checkLookSynonyms (String userInput)
+    {
+        //Check to see if the users input has any words that are synonyms to look
+        if (userInput.contains ("examine") || userInput.contains ("look") || userInput.contains ("looking") || userInput.contains ("review") || userInput.contains ("inspect")
+                || userInput.contains ("gander") || userInput.contains ("observe") || userInput.contains ("survey") || userInput.contains ("see")) {
+            return true;
+        } else {
+            return false;
         }
     }
     

@@ -104,9 +104,6 @@ public class MainGameHandler {
         
         //Load the players data
         playerData = new PlayerData ();
-        playerData.journalEntries.add (GameItems.playerNoteOne);
-        playerData.journalEntries.add (GameItems.playerNoteTwo);
-        playerData.journalEntries.add (GameItems.playerNoteThree);
         
         //Now load all the rooms within the game
         playerCellRoom = new PlayerCell (gameSettings, this);
@@ -221,23 +218,35 @@ public class MainGameHandler {
         }
     }
     
-    public void keyPressed (KeyEvent event)
-    {
-        //Check to see if the user is trying to pause the menu or not
-        if (event.getKeyChar () == KeyEvent.VK_ESCAPE) {
-            //Pause the game
-            escapePressed ();
+    public void keyPressed (KeyEvent event) {
+        //Find out what the player has typed
+        if (event.getKeyChar() == KeyEvent.VK_ESCAPE) {
+            //Go into the method that will deal with how the escape button is handled
+            escapePressed();
+
         //Check to see if the user is trying to open/close the journal menu
+        } else if (event.getKeyCode() == 40) {
+            //Add to the current button selection button
+            changeSelectedButton(1);
+
+        }else if (event.getKeyCode() == 38) {
+            //Subtract to the current button selection button
+            changeSelectedButton(-1);
+
         } else if (event.getKeyChar () == KeyEvent.VK_TAB) {
             //Open or close the journal window
             showHideJournalWindow ();
+
         //Check to see if the user is tyring to press the enter key
         } else if (event.getKeyChar () == KeyEvent.VK_ENTER) {
+            //Have the program deal with the player pressing the enter button
             enterPressed ();
-            //Check to see if the user is trying to delete a character from what they typed.
+
+        //Check to see if the user is trying to delete a character from what they typed.
         } else if (event.getKeyChar () == KeyEvent.VK_BACK_SPACE) {
             if (!userInput.equals (""))
                 userInput = userInput.substring (0, userInput.length () - 1);
+
         } else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER) {
             //See if the message window is open to record when the user presses the space bar
             if (displayMessage) {
@@ -248,6 +257,7 @@ public class MainGameHandler {
                         gameMain.reDrawGUI = true;
                     }
                 }
+
             //First make sure that the user string isn't longer then how many characters can fit into the border
             } else if (checkUserInputLength ()) {
                 //Now only write something to the user input if the user is either not holding the shift key or when they press the shift key while pressing another key
@@ -424,7 +434,72 @@ public class MainGameHandler {
     //This will allow the program to add text to the game log
     public void addToGameLog (String gameLogOutput)
     {
+        //First add the string to the gamelog
         gameLog.add (gameLogOutput);
+
+        //Now check how many lines there will be in the gamelog and make sure with this new added input it won't
+        //go past the height of the window
+        //Set up all the variables needed for the loop
+        int amountOfLines = 0;
+        int maxLineCharacterLength = gameLogBorder.width - 6;
+        String lineToAdd = "";
+        String wordToAdd = "";
+        boolean drawLine = false;
+        //Go through all the items in the game log array and write them to the terminal
+        for (int i = 0; i < gameLog.size (); i++)
+        {
+            //Get the current line that needs to be written to the terminal and split it by the spaces
+            String[] currLine = gameLog.get (i).split (" ");
+
+            //Now loop through all the words in this line
+            for (int wordIndex = 0; wordIndex < currLine.length; wordIndex++) {
+                //First off check to see if the current line should be drawn based on it's length
+                if (drawLine || lineToAdd.length () > maxLineCharacterLength) {
+                    //Now add on to the y position for the next line
+                    amountOfLines++;
+                    //Make sure to reset the line to add
+                    lineToAdd = "";
+                    //Same for the draw line boolean
+                    drawLine = false;
+
+                    //Now check to see if there was a word that would have been skipped because a line being too long
+                    if (!wordToAdd.equals ("")) {
+                        //Add this word to the next line to be added
+                        lineToAdd += wordToAdd + " ";
+                        //And reset the word to add
+                        wordToAdd = "";
+                    }
+                }
+
+                //Now find out if the next word in the array should be added to the current line or if the line
+                //would be larger then the max with this word added to it.
+                if ((lineToAdd.length () + currLine[wordIndex].length() + " ".length ()) < maxLineCharacterLength) {
+                    //Add this word to the line
+                    lineToAdd += currLine[wordIndex] + " ";
+                } else {
+                    //Make sure the current word will be added to the next line
+                    wordToAdd = currLine[wordIndex];
+                    //And tell the program to write this line
+                    drawLine = true;
+                }
+            }
+
+            //Now add on to the y position for the next line
+            amountOfLines++;
+
+            //Check to see if there is a word to add and if so add it to the line
+            if (!wordToAdd.equals ("")) {
+                wordToAdd = "";
+                amountOfLines++;
+            }
+        }
+
+        //Now check if the amount of lines exceeds the height of the gamelog border
+        if (amountOfLines - 1 > gameLogBorder.clone().height - 2) {
+            //Since there are too many lines to add to the gamelog remove the first item in the gamelog list
+            //Which is the oldest message
+            gameLog.remove (0);
+        }
     }
     
     //---------------Displaying Message Related Functions---------------\\

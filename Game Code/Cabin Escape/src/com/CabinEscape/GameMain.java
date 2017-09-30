@@ -187,26 +187,26 @@ public class GameMain extends JFrame implements KeyListener {
          *      39 = Right Arrow
          *      37 = Left Arrow
          */
-        
+
         //Check to see if the user has typed anything while in the game menu
         if (currentMenu == Menu.GAME) {
-            gameMenu.keyPressed (event);
+            gameMenu.keyPressed(event);
+        } else {
+            if (event.getKeyCode() == 40)
+                changeSelectedButton(1);
+
+            else if (event.getKeyCode() == 38)
+                changeSelectedButton(-1);
+
+            else if (event.getKeyCode() == 39)
+                incrementSelectedButton(1);
+
+            else if (event.getKeyCode() == 37)
+                incrementSelectedButton(-1);
+
+            else if (event.getKeyCode() == KeyEvent.VK_ENTER)
+                activateButton();
         }
-        
-        if (event.getKeyCode () == 40)
-            changeSelectedButton (1);
-        
-        else if (event.getKeyCode () == 38)
-            changeSelectedButton (-1);
-        
-        else if (event.getKeyCode () == 39)
-            incrementSelectedButton (1);
-        
-        else if (event.getKeyCode () == 37)
-            incrementSelectedButton (-1);
-        
-        else if (event.getKeyCode () == KeyEvent.VK_ENTER)
-            activateButton ();
         
         //Make sure to update the terminal to display the new information
         updateTerminal ();
