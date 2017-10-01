@@ -233,23 +233,33 @@ public class PlayerCell {
                 if (checkLookSynonyms(userInput)) {
                     //The user is trying to examine the mattress now see if they're trying to look under it
                     if (userInput.contains("under") || userInput.contains("beneath") || userInput.contains("bottom")) {
-
-                        //Write to the gamelog that the player looks under the mattress and give them the specific items
-                        //that are hidden under it
-                        mainGame.addToGameLog("You look under your mattress and a slight feeling of peace greats you " +
-                                "as you see all the different trinkets and papers you've accumulated since you've been here.");
-                        mainGame.addToGameLog("Entries added to your journal!");
-
-                        //Now add the messages to the player journals
-                        mainGame.playerData.journalEntries.add(GameItems.playerNoteOne);
-                        mainGame.playerData.journalEntries.add(GameItems.playerNoteTwo);
-                        mainGame.playerData.journalEntries.add(GameItems.playerNoteThree);
+                        
+                        //Only do this if the player doesn't already have the notes
+                        if (!GameItems.playerNoteOne.playerHasItem) {
+                            //Write to the gamelog that the player looks under the mattress and give them the specific items
+                            //that are hidden under it
+                            mainGame.addToGameLog ("You look under your mattress and a slight feeling of peace greats you " +
+                                    "as you see all the different trinkets and papers you've accumulated since you've been here. You pick up the " +
+                                    "papers, fold them, and put them in your pocket.");
+                            mainGame.addToGameLog ("#g Entries added to your journal!");
+    
+                            //Now add the messages to the player journals
+                            mainGame.playerData.journalEntries.add (GameItems.playerNoteOne);
+                            GameItems.playerNoteOne.playerHasItem = true;
+                            mainGame.playerData.journalEntries.add (GameItems.playerNoteTwo);
+                            GameItems.playerNoteTwo.playerHasItem = true;
+                            mainGame.playerData.journalEntries.add (GameItems.playerNoteThree);
+                            GameItems.playerNoteThree.playerHasItem = true;
+                        } else {
+                            //The player already looked under the bed
+                            mainGame.addToGameLog ("There's no need to look under the bed again.");
+                        }
                     } else {
 
                         //Write to the gamelog the description of the mattress
                         mainGame.addToGameLog("It's the disgusting bug and stain ridden mattress you've been forced to sleep on " +
-                                "since you were kidnapped. But even then you still find yourself coming back to it for safety or when you need " +
-                                "to hide anything.");
+                                "since you were kidnapped. But even then you still find yourself coming back to it for safety because of everything " +
+                                "underneath it you hide.");
                     }
                 }
 
