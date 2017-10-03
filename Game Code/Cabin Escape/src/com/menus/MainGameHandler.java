@@ -35,6 +35,9 @@ public class MainGameHandler {
 
     //These variables are needed to draw the inventory segment
     private Rect inventoryBorder;   //The inventories border
+    
+    //These variables are needed to draw the controls segment
+    private Rect controlsBorder;    //The controls border
 
     //These variables are needed to draw and handle the pause menu
     private ArrayList<String> pauseMenuButtons = new ArrayList<String> ();  //All the buttons that go on the pause menu
@@ -84,9 +87,14 @@ public class MainGameHandler {
                                     3);
         
         inventoryBorder = new Rect (gameLogBorder.width,
-                                    0,
+                                    10,
                                     22,
-                                    gameSettings.gameWindowHeight);
+                                    gameSettings.gameWindowHeight - 10);
+        
+        controlsBorder = new Rect (gameLogBorder.width,
+                                   0,
+                                   22,
+                                   10);
         
         pauseMenuBorder = new Rect ((gameSettings.gameWindowWidth / 2) - 12,
                                     (gameSettings.gameWindowHeight / 2) - 5,
@@ -95,6 +103,7 @@ public class MainGameHandler {
         
         pauseMenuButtons.add ("Save Game");
         pauseMenuButtons.add ("Load Game");
+        pauseMenuButtons.add ("Help");
         pauseMenuButtons.add ("Settings");
         pauseMenuButtons.add ("Back");
         pauseMenuButtons.add ("Exit Game");
@@ -114,8 +123,11 @@ public class MainGameHandler {
     //This will be called whenever the user presses the escape button (mainly used to show/hide the pause menu)
     public void escapePressed ()
     {
-        setupPauseMenuAnimation ();
-        selectedMenuButton = 0;
+        //Only do this if no other menus are open
+        if (!displayMessage && !animateMessageWindow && !animatePauseMenu && !hideMessageWindow && !hidePauseMenu && !hideJournalMenu && !showJournalMenu && !journalMenuOpen) {
+            setupPauseMenuAnimation ();
+            selectedMenuButton = 0;
+        }
     }
     
     //Function that makes sure the users input isn't longer then the border
@@ -166,12 +178,15 @@ public class MainGameHandler {
                 //Display the load game menu
                 gameMain.changeMenu (GameMain.Menu.LOAD);
             } else if (selectedMenuButton == 2) {
+                //Display the help menu
+                gameMain.changeMenu (GameMain.Menu.HELP);
+            } else if (selectedMenuButton == 3) {
                 //Display the settings game menu
                 gameMain.changeMenu (GameMain.Menu.SETTINGS);
-            } else if (selectedMenuButton == 3) {
+            } else if (selectedMenuButton == 4) {
                 //Close the pause menu
                 setupPauseMenuAnimation ();
-            } else if (selectedMenuButton == 4) {
+            } else if (selectedMenuButton == 5) {
                 //Close the pause menu
                 pauseMenuOpen = false;
                 //Tell the program the game won't be running any more
@@ -223,8 +238,12 @@ public class MainGameHandler {
         //Find out what the player has typed
         if (event.getKeyChar() == KeyEvent.VK_ESCAPE) {
             //Go into the method that will deal with how the escape button is handled
-            escapePressed();
-
+            escapePressed ();
+    
+        } else if (event.getKeyChar () == KeyEvent.VK_F1) {
+            //Open up the help menu
+            gameMain.changeMenu (GameMain.Menu.HELP);
+            
         //Check to see if the user is trying to open/close the journal menu
         } else if (event.getKeyCode() == 40) {
             //Add to the current button selection button
@@ -351,12 +370,31 @@ public class MainGameHandler {
                 userInputBorder.y + 1,
                 AsciiPanel.green);
     
+        //---------------Draw everything needed for the control area---------------\\
+        GameRendering.drawBorder (controlsBorder,
+                                  gameTerminal,
+                                  AsciiPanel.white,
+                                  null,
+                                  "Controls");
+        
+        //Now draw all the different controls the player has
+        gameTerminal.write ("ESC", controlsBorder.x + 2, controlsBorder.y + 2, AsciiPanel.yellow);
+        gameTerminal.write (" - Pause Menu", controlsBorder.x + 5, controlsBorder.y + 2);
+        
+        gameTerminal.write ("TAB", controlsBorder.x + 2, controlsBorder.y + 4, AsciiPanel.yellow);
+        gameTerminal.write (" - Journal", controlsBorder.x + 5, controlsBorder.y + 4);
+        
+        gameTerminal.write ("F1", controlsBorder.x + 2, controlsBorder.y + 6, AsciiPanel.yellow);
+        gameTerminal.write (" - Help", controlsBorder.x + 4, controlsBorder.y + 6);
+        
+        
         //---------------Draw everything needed for the players inventory---------------\\
         GameRendering.drawBorder (inventoryBorder,
                                   gameTerminal,
                                   AsciiPanel.white,
                                   null,
                                   "Inventory");
+        
     }
     
     //This will draw all the log text

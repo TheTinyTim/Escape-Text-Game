@@ -33,7 +33,8 @@ public class GameMain extends JFrame implements KeyListener {
         GAME,
         SETTINGS,
         SAVE,
-        LOAD
+        LOAD,
+        HELP
     }
     
     //Public variables
@@ -53,6 +54,7 @@ public class GameMain extends JFrame implements KeyListener {
     private MainGameHandler gameMenu;
     private SaveFileHandler saveFileHandler;
     private LoadSaveHandler loadSaveHandler;
+    private HelpMenuHandler helpMenuHandler;
     private Menu currentMenu = Menu.MAIN;                //The current menu being displayed
     
     private Timer timer;
@@ -112,6 +114,7 @@ public class GameMain extends JFrame implements KeyListener {
         gameMenu = new MainGameHandler (gameSettings, gameTerminal, this);
         saveFileHandler = new SaveFileHandler (gameSettings, gameTerminal, this);
         loadSaveHandler = new LoadSaveHandler (gameSettings, gameTerminal, this);
+        helpMenuHandler = new HelpMenuHandler (gameSettings, gameTerminal, this);
         
         //Set up the timer to continually update if needed by the program
         ActionListener actionListener = new ActionListener () {
@@ -149,6 +152,8 @@ public class GameMain extends JFrame implements KeyListener {
             saveFileHandler.drawGUI ();
         else if (currentMenu == Menu.LOAD)
             loadSaveHandler.drawGUI ();
+        else if (currentMenu == Menu.HELP)
+            helpMenuHandler.drawGUI ();
         
         //Now repaint the terminal so the changes will actually display
         gameTerminal.repaint ();
@@ -190,7 +195,9 @@ public class GameMain extends JFrame implements KeyListener {
 
         //Check to see if the user has typed anything while in the game menu
         if (currentMenu == Menu.GAME) {
-            gameMenu.keyPressed(event);
+            gameMenu.keyPressed (event);
+        } else if (currentMenu == Menu.HELP) {
+            helpMenuHandler.keyPressed (event);
         } else {
             if (event.getKeyCode() == 40)
                 changeSelectedButton(1);
