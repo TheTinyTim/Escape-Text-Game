@@ -6,7 +6,10 @@ import com.rooms.PlayerCell;
 import com.structs.Rect;
 import com.structs.Vector2D;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -38,6 +41,9 @@ public class MainGameHandler {
     
     //These variables are needed to draw the controls segment
     private Rect controlsBorder;    //The controls border
+    
+    //These variables are needed to draw the mini map segment
+    private Rect miniMapBorder;     //The mini map border
 
     //These variables are needed to draw and handle the pause menu
     private ArrayList<String> pauseMenuButtons = new ArrayList<String> ();  //All the buttons that go on the pause menu
@@ -57,6 +63,11 @@ public class MainGameHandler {
     private boolean showMessageCloseButton = true;
     private int segmentedMessageSpot = 0;                               //What the current spot is for the segmented message
     private Rect messageBorder;                                         //The messages border
+    private boolean delayedTextBeingDisplayed = false;                  //Stores if any delayed text is being displayed or not
+    private Timer delayedTextTimer;                                     //The timer that will update the game log with delayed text
+    private String[] delayedText;                                       //This will store all the text that needs to be delayed
+    private int delayedTextSpot = 0;                                    //This is the current index of what needs to be shown for the delayed text
+    private String endingAction;                                        //This will hold what the program should do after the delayed text is done displaying
     
     //The variables needed for the journal entry menu
     private boolean journalMenuOpen = false;    //Stores if the journal menu is open right now
@@ -87,19 +98,24 @@ public class MainGameHandler {
                                     3);
         
         inventoryBorder = new Rect (gameLogBorder.width,
-                                    10,
+                                    20,
                                     22,
-                                    gameSettings.gameWindowHeight - 10);
+                                    gameSettings.gameWindowHeight - 20);
+        
+        miniMapBorder = new Rect (gameLogBorder.width,
+                                    0,
+                                    22,
+                                    10);
         
         controlsBorder = new Rect (gameLogBorder.width,
-                                   0,
+                                   10,
                                    22,
                                    10);
         
         pauseMenuBorder = new Rect ((gameSettings.gameWindowWidth / 2) - 12,
-                                    (gameSettings.gameWindowHeight / 2) - 5,
+                                    (gameSettings.gameWindowHeight / 2) - 7,
                                     25,
-                                    13);
+                                    15);
         
         pauseMenuButtons.add ("Save Game");
         pauseMenuButtons.add ("Load Game");
@@ -108,9 +124,19 @@ public class MainGameHandler {
         pauseMenuButtons.add ("Back");
         pauseMenuButtons.add ("Exit Game");
         
-        pauseMenuButtonPos = new Vector2D (pauseMenuBorder.x + ((pauseMenuBorder.width / 2) - 4), pauseMenuBorder.y + ((pauseMenuBorder.height / 2) - 4));
+        pauseMenuButtonPos = new Vector2D (pauseMenuBorder.x + ((pauseMenuBorder.width / 2) - 4), pauseMenuBorder.y + ((pauseMenuBorder.height / 2) - 5));
         
         messageBorder = new Rect (30, 5, gameSettings.gameWindowWidth - 60, gameSettings.gameWindowHeight - 10);
+        
+        //Set up the delayed text timer
+        ActionListener actionListener = new ActionListener () {
+            @Override
+            public void actionPerformed (ActionEvent e)
+            {
+                showDelayedText ();
+            }
+        };
+        delayedTextTimer = new Timer (5000, actionListener);
         
         //Load the players data
         playerData = new PlayerData ();
@@ -228,7 +254,7 @@ public class MainGameHandler {
             //Get the current room the player is in and what ever it is check to see if this input will do anything
             if (currentRoom == "Player Cell")
                 playerCellRoom.checkUserInput (userInput);
-            
+
             //Now remove everything from the users input
             userInput = "";
         }
@@ -240,9 +266,11 @@ public class MainGameHandler {
             //Go into the method that will deal with how the escape button is handled
             escapePressed ();
     
-        } else if (event.getKeyChar () == KeyEvent.VK_F1) {
-            //Open up the help menu
-            gameMain.changeMenu (GameMain.Menu.HELP);
+        } else if (event.getKeyCode () == 112) {
+            //Open up the help menu only if other menus aren't open
+            if (!displayMessage && !pauseMenuOpen && !animatePauseMenu && !hidePauseMenu && !animateMessageWindow && !hideMessageWindow && !showJournalMenu && !hideJournalMenu) {
+                gameMain.changeMenu (GameMain.Menu.HELP);
+            }
             
         //Check to see if the user is trying to open/close the journal menu
         } else if (event.getKeyCode() == 40) {
@@ -267,7 +295,7 @@ public class MainGameHandler {
             if (!userInput.equals (""))
                 userInput = userInput.substring (0, userInput.length () - 1);
 
-        } else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER) {
+        } else if (!event.isActionKey () && event.getKeyChar () != KeyEvent.VK_ENTER && !event.isControlDown () && !event.isAltDown ()) {
             //See if the message window is open to record when the user presses the space bar
             if (displayMessage) {
                 if (event.getKeyChar () == KeyEvent.VK_SPACE) {
@@ -369,6 +397,18 @@ public class MainGameHandler {
                 userInputBorder.x + 1,
                 userInputBorder.y + 1,
                 AsciiPanel.green);
+        
+        //---------------Draw everything needed for the mini map---------------\\
+        GameRendering.drawBorder (miniMapBorder,
+                                    gameTerminal,
+                                    AsciiPanel.white,
+                                    null,
+                                    "Map");
+        
+        //Draw what cardinal direction the player is currently looking
+        gameTerminal.write ("Facing: " + playerData.directionLooking,
+                            miniMapBorder.x + 2,
+                            miniMapBorder.y + 2);
     
         //---------------Draw everything needed for the control area---------------\\
         GameRendering.drawBorder (controlsBorder,
@@ -445,6 +485,9 @@ public class MainGameHandler {
                 if (currLine[wordIndex].equals ("#g")) {
                     //This means the line should be green
                     foreground = AsciiPanel.green;
+                } else if (currLine[wordIndex].equals ("#r")) {
+                    //This means the line should be red
+                    foreground = AsciiPanel.red;
                 } else if ((lineToAdd.length () + currLine[wordIndex].length() + " ".length ()) < maxLineCharacterLength) {
                     //Add this word to the line
                     lineToAdd += currLine[wordIndex] + " ";
@@ -473,6 +516,49 @@ public class MainGameHandler {
             //Same for the draw line boolean
             drawLine = false;
         }
+    }
+    
+    //This function sets everything needed to have an array of text be shown at a delay
+    public void startDelayedText (String[] delayedText, String endingAction)
+    {
+        this.delayedText = delayedText;     //Set the text that needs to be displayed
+        this.endingAction = endingAction;   //Set what needs to be done once the timer is done
+        delayedTextSpot = 0;                //Make sure to have the text index start at 0
+        delayedTextTimer.start ();          //Start the actual timer
+        delayedTextBeingDisplayed = true;   //Tell the program that there is text being delayed
+        showDelayedText ();                 //Show the first line of the delayed text
+    }
+    
+    //This function will restart the timer in case the user typed something and it needs to be restarted
+    public void restartDelayedTextTimer ()
+    {
+        delayedTextTimer.restart ();
+    }
+    
+    //This will actually add the delayed text to the game log and stop the timer if it's reached the last line
+    private void showDelayedText ()
+    {
+        if (delayedTextSpot > delayedText.length - 1) {
+            //Stop the timer because all of the text has been added to the game log
+            delayedTextTimer.stop ();
+            delayedTextBeingDisplayed = false;
+            
+            //Now find out what needs to be done once the timer is done
+            if (endingAction.equals ("sam leaves")) {
+                playerCellRoom.isSamDownstairs = false;
+            } else if (endingAction.equals ("kill sam")) {
+                playerCellRoom.isSamDead = true;
+                playerCellRoom.allowUserInput = true;
+            }
+            
+        } else {
+            //Add the text to the game log
+            addToGameLog (delayedText[delayedTextSpot]);
+            //Now add onto the delayed text spot
+            delayedTextSpot++;
+        }
+        //Make sure the GUI is updated
+        gameMain.updateTerminal ();
     }
     
     //This will allow the program to add text to the game log
@@ -538,10 +624,13 @@ public class MainGameHandler {
                     wordToAdd = "";
                     amountOfLines++;
                 }
+                
+                //Make sure to reset the line to add
+                lineToAdd = "";
             }
     
             //Now check if the amount of lines exceeds the height of the gamelog border
-            if (amountOfLines - 12 > gameLogBorder.height) {
+            if (amountOfLines > gameLogBorder.height - 2) {
                 //Since there are too many lines to add to the gamelog remove the first item in the gamelog list
                 //Which is the oldest message
                 gameLog.remove (0);
