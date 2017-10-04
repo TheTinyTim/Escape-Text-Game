@@ -15,4 +15,7 @@ public class PlayerData {
      */
     
     public ArrayList<ItemData> journalEntries = new ArrayList<ItemData> ();
+    
+    public String directionLooking = "North";   //The current direction the player is looking
+    
 }
