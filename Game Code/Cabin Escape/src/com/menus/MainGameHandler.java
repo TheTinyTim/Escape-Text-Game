@@ -549,6 +549,11 @@ public class MainGameHandler {
             } else if (endingAction.equals ("kill sam")) {
                 playerCellRoom.isSamDead = true;
                 playerCellRoom.allowUserInput = true;
+            }  else if (endingAction.equals ("kill sam bucket")) {
+                playerCellRoom.isSamDead = true;
+                playerCellRoom.allowUserInput = true;
+                //Remove the bucket from the players inventory
+                playerData.removeItemFromInventory (GameItems.cellBucket);
             }
             
         } else {

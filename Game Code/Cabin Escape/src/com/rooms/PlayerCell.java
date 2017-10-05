@@ -154,6 +154,9 @@ public class PlayerCell {
                             "you get a whiff of probably the worst thing you've ever smelled coming from a human being, " +
                             "if you can call him that, from what you can only assume is his breath. You also notice something " +
                             "shiny in his shirt pocket.");
+    
+                    //Restart the delayed text timer so it doesn't look so weird
+                    mainGame.restartDelayedTextTimer ();
             
                 } else if (userInput.contains ("throw") || userInput.contains ("toss") || userInput.contains ("splash") || userInput.contains ("use")) {
                     //The player is trying to use something from their inventory. Try to find out what it is they're trying to use
@@ -171,14 +174,16 @@ public class PlayerCell {
                                     
                                             "Yup you definitely got some in his mouth. You can tell Sam is choking on the...waste. " +
                                                     "Sam desperately tries to grab you but can't quite reach you knocking " +
-                                                    "an item from his shirt pocket onto the ground.",
+                                                    "a key from his shirt pocket onto the ground.",
                                     
                                             "#r \"Mother...Will...Teach...You...\", Sam gasps out as he falls to the ground dying.",
                                     
                                             "#g After a moment of twitching and convulsions you gather that Sam has finally died. \"This is it.\", " +
-                                                    "you say aloud \"Now's my chance to get out of here...\""},
+                                                    "you say aloud \"Now's my chance to get out of here...\"",
+                                    
+                                            "#g You drop the bucket as it has no use to you anymore."},
                             
-                                    "kill sam");
+                                    "kill sam bucket");
     
                             //Don't let the user input anything while this is going on
                             allowUserInput = false;
@@ -194,7 +199,7 @@ public class PlayerCell {
                             
                                     "#r \"Mother...Will...Teach...You...\", Sam faintly says as he's falling to the ground.",
                             
-                                    "You notice an object fall from his pocket as he's falling. You can tell as he lays on the ground he " +
+                                    "You notice a key fall from his pocket as he's falling. You can tell as he lays on the ground he " +
                                             "slowly starts fading out of consciousness, and by the amount of blood he's losing you don't think " +
                                             "he's getting back up."},
                     
@@ -424,10 +429,26 @@ public class PlayerCell {
             
                     //Try to figure out what the player is trying to do
                     if (checkLookSynonyms (userInput) || userInput.contains ("area")) {
-                
+    
                         //The user is trying to get the description of the side of the room they're looking at
                         mainGame.addToGameLog (westSideDescription);
-                
+                        
+                    } else if (checkPickUpSynonyms (userInput)) {
+                        //The player is trying to pick an item up so try to find out what they're picking up
+                        if (userInput.contains ("bucket")) {
+                            //The user is trying to pick up the bucket in the corner of the room so first check if they already have it in their inventory and do what's needed
+                            if (GameItems.cellBucket.playerHadItem || GameItems.cellBucket.playerHasItem) {
+                                //The player already has or at one point had the bucket so tell them it's not there anymore
+                                mainGame.addToGameLog ("You've already picked up the bucket.");
+                            } else {
+                                //The player hasn't picked up the bucket yet so tell them they've picked it up and add it to their inventory
+                                mainGame.addToGameLog ("You question what you're about to do but you grab the bucket from the corner of the room.");
+                                mainGame.addToGameLog ("#g Dirty Bucket added to your inventory!");
+                                
+                                //Actually add the bucket to the players inventory
+                                mainGame.playerData.addItemToInventory (GameItems.cellBucket);
+                            }
+                        }
                     } else {
                 
                         //Tell the player they can't do that
@@ -461,6 +482,15 @@ public class PlayerCell {
         } else {
             return false;
         }
+    }
+    
+    //This function will check if the user is trying to pick an item up
+    private boolean checkPickUpSynonyms (String userInput)
+    {
+        if ((userInput.contains ("pick") && userInput.contains ("up")) || userInput.contains ("grab") || userInput.contains ("snag") || userInput.contains ("take") || userInput.contains ("nab"))
+            return true;
+        else
+            return false;
     }
     
     //This function will check and make sure that the current direction is within the bounds of how many sides the room has
